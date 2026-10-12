@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "operator:title-equal-cast",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "title", "values": ["cast away"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "operator:year-between-1990-2000",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "year", "operator": "BETWEEN", "lowerValue": 1990, "upperValue": 2000 }
+      ],
+      "expectedRowIndexes": [0, 1]
+    },
+    {
+      "id": "collection:actors-contains-bill",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "CONTAINS_EITHER", "values": ["bill paxton"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "operator:title-not-equal-big",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "title", "operator": "NOT_EQUAL", "values": ["big"] }
+      ],
+      "expectedRowIndexes": [0, 1]
+    },
+    {
+      "id": "operator:rating-less-than-8",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "rating", "operator": "LESS_THAN", "values": [8] }
+      ],
+      "expectedRowIndexes": [1, 2]
+    },
+    {
+      "id": "operator:year-greater-than-equal-1995",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "year", "operator": "GREATER_THAN_EQUAL", "values": [1995] }
+      ],
+      "expectedRowIndexes": [0, 1]
+    },
+    {
+      "id": "collection:actors-contains-all-tom-and-bill",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "CONTAINS_ALL", "values": ["tom hanks", "bill paxton"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "collection:actors-not-contains-bill",
+      "normalizationProfile": "java",
+      "schema": "movie-sample-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "NOT_CONTAINS", "values": ["bill paxton"] }
+      ],
+      "expectedRowIndexes": [0, 2]
+    }
+  ]
+}

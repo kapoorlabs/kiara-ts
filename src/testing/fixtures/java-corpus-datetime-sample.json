@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "datetime:createdAt-equal-2024-01-01",
+      "normalizationProfile": "java",
+      "schema": "datetime-sample-v1",
+      "rows": [
+        { "event": "Launch", "createdAt": "2024-01-01 10:00:00", "touchpoints": "2024-01-01 10:00:00,2024-01-02 09:00:00" },
+        { "event": "Landing", "createdAt": "2024-02-01 11:00:00", "touchpoints": "2024-02-01 11:00:00,2024-02-03 12:30:00" }
+      ],
+      "conditions": [
+        { "field": "createdAt", "values": ["2024-01-01 10:00:00"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "datetime:createdAt-greater-than-2024-01-15",
+      "normalizationProfile": "java",
+      "schema": "datetime-sample-v1",
+      "rows": [
+        { "event": "Launch", "createdAt": "2024-01-01 10:00:00", "touchpoints": "2024-01-01 10:00:00,2024-01-02 09:00:00" },
+        { "event": "Landing", "createdAt": "2024-02-01 11:00:00", "touchpoints": "2024-02-01 11:00:00,2024-02-03 12:30:00" }
+      ],
+      "conditions": [
+        { "field": "createdAt", "operator": "GREATER_THAN", "values": ["2024-01-15 00:00:00"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "datetime:touchpoints-contains-2024-02-03",
+      "normalizationProfile": "java",
+      "schema": "datetime-sample-v1",
+      "rows": [
+        { "event": "Launch", "createdAt": "2024-01-01 10:00:00", "touchpoints": "2024-01-01 10:00:00,2024-01-02 09:00:00" },
+        { "event": "Landing", "createdAt": "2024-02-01 11:00:00", "touchpoints": "2024-02-01 11:00:00,2024-02-03 12:30:00" }
+      ],
+      "conditions": [
+        { "field": "touchpoints", "operator": "CONTAINS_EITHER", "values": ["2024-02-03 12:30:00"] }
+      ],
+      "expectedRowIndexes": [1]
+    }
+  ]
+}

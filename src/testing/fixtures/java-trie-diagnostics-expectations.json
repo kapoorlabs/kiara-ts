@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "cases": [
+    {
+      "id": "trie:movie-two-rows",
+      "rows": [
+        { "title": "Cast Away", "year": 2000 },
+        { "title": "Apollo 13", "year": 1995 }
+      ],
+      "expectedSerialization": "#0|null|null|null|~0,1\n#1|0|title|cast away|~0\n#3|0|title|apollo 13|~1\n#2|1|year|2000.00|~0\n#4|3|year|1995.00|~1"
+    },
+    {
+      "id": "trie:duplicate-row-dedup-path",
+      "rows": [
+        { "title": "Cast Away", "year": 2000 },
+        { "title": "Cast Away", "year": 2000 }
+      ],
+      "expectedSerialization": "#0|null|null|null|~0,1\n#1|0|title|cast away|~0,1\n#2|1|year|2000.00|~0,1"
+    }
+  ]
+}

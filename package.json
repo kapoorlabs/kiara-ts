@@ -1,0 +1,25 @@
+{
+  "name": "kiaradb",
+  "version": "0.0.0",
+  "private": true,
+  "description": "In-progress browser-first TypeScript port of Kiara DB",
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:playwright": "npm run build && playwright test",
+    "demo:repo": "npm run build && node examples/demo-repo/run-demo.mjs",
+    "demo:decorators": "vitest run src/decorators/entity.test.ts",
+    "bench:smoke": "npm run build && node scripts/benchmark-worker.mjs",
+    "bench:check": "npm run bench:smoke && node scripts/benchmark-assert.mjs && node scripts/benchmark-record-history.mjs",
+    "bench:check:ci": "npm run bench:smoke && node scripts/benchmark-assert.mjs --profile=ci && node scripts/benchmark-record-history.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0-beta-1791301756000",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}

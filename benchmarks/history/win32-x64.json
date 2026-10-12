@@ -1,0 +1,106 @@
+[
+  {
+    "timestamp": "2026-10-11T22:35:01.584Z",
+    "platform": "win32",
+    "arch": "x64",
+    "rows": 10000,
+    "queryIterations": 200,
+    "workerIterations": 100,
+    "timings": {
+      "loadMs": 0.9677999999999969,
+      "prepareMs": 132.73469999999998,
+      "query": {
+        "count": 200,
+        "minMs": 1.6182000000000016,
+        "meanMs": 2.0202464999999985,
+        "p95Ms": 2.961400000000026,
+        "maxMs": 10.038900000000012
+      },
+      "workerRoundTrip": {
+        "count": 100,
+        "minMs": 1.0273999999999432,
+        "meanMs": 1.261664000000011,
+        "p95Ms": 1.946800000000053,
+        "maxMs": 4.690200000000004
+      }
+    }
+  },
+  {
+    "timestamp": "2026-10-11T22:39:02.042Z",
+    "platform": "win32",
+    "arch": "x64",
+    "rows": 10000,
+    "queryIterations": 200,
+    "workerIterations": 100,
+    "timings": {
+      "loadMs": 1.3242999999999938,
+      "prepareMs": 162.6094,
+      "query": {
+        "count": 200,
+        "minMs": 1.6240999999999985,
+        "meanMs": 2.224746000000004,
+        "p95Ms": 2.9493000000000507,
+        "maxMs": 14.290600000000012
+      },
+      "workerRoundTrip": {
+        "count": 100,
+        "minMs": 1.0481999999999516,
+        "meanMs": 1.4231570000000022,
+        "p95Ms": 1.8768999999999778,
+        "maxMs": 7.42960000000005
+      }
+    }
+  },
+  {
+    "timestamp": "2026-10-11T22:39:02.072Z",
+    "platform": "win32",
+    "arch": "x64",
+    "rows": 10000,
+    "queryIterations": 200,
+    "workerIterations": 100,
+    "timings": {
+      "loadMs": 1.3242999999999938,
+      "prepareMs": 162.6094,
+      "query": {
+        "count": 200,
+        "minMs": 1.6240999999999985,
+        "meanMs": 2.224746000000004,
+        "p95Ms": 2.9493000000000507,
+        "maxMs": 14.290600000000012
+      },
+      "workerRoundTrip": {
+        "count": 100,
+        "minMs": 1.0481999999999516,
+        "meanMs": 1.4231570000000022,
+        "p95Ms": 1.8768999999999778,
+        "maxMs": 7.42960000000005
+      }
+    }
+  },
+  {
+    "timestamp": "2026-10-11T22:48:59.459Z",
+    "platform": "win32",
+    "arch": "x64",
+    "rows": 10000,
+    "queryIterations": 200,
+    "workerIterations": 100,
+    "timings": {
+      "loadMs": 0.7356999999999942,
+      "prepareMs": 128.8537,
+      "query": {
+        "count": 200,
+        "minMs": 1.6147999999999456,
+        "meanMs": 1.9499935000000022,
+        "p95Ms": 2.4406999999999925,
+        "maxMs": 10.598600000000005
+      },
+      "workerRoundTrip": {
+        "count": 100,
+        "minMs": 1.014099999999985,
+        "meanMs": 1.2939479999999992,
+        "p95Ms": 1.8300999999999021,
+        "maxMs": 5.4640000000000555
+      }
+    }
+  }
+]

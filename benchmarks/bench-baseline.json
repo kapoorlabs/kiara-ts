@@ -1,0 +1,9 @@
+{
+  "prepareMsReference": 160,
+  "queryP95MsReference": 3,
+  "workerRoundTripP95MsReference": 3.5,
+  "regressionFactorMax": 2,
+  "prepareMsAbsoluteMax": 500,
+  "queryP95MsAbsoluteMax": 20,
+  "workerRoundTripP95MsAbsoluteMax": 20
+}

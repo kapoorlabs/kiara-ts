@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "sourceSha": "java-sample-sha-a",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "stemming:match-1",
+      "normalizationProfile": "java",
+      "schema": {},
+      "rows": [],
+      "conditions": [],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "stemming:miss-1",
+      "normalizationProfile": "java",
+      "schema": {},
+      "rows": [],
+      "conditions": [],
+      "expectedRowIndexes": [0]
+    }
+  ]
+}

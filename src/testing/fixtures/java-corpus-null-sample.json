@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "null:score-equal-null",
+      "normalizationProfile": "java",
+      "schema": "null-sample-v1",
+      "rows": [
+        { "title": "Known", "tags": "alpha,beta", "score": 10 },
+        { "title": "Unknown", "tags": null, "score": null }
+      ],
+      "conditions": [
+        { "field": "score", "values": [null] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "null:tags-contains-either-including-null",
+      "normalizationProfile": "java",
+      "schema": "null-sample-v1",
+      "rows": [
+        { "title": "Known", "tags": "alpha,beta", "score": 10 },
+        { "title": "Unknown", "tags": null, "score": null }
+      ],
+      "conditions": [
+        { "field": "tags", "operator": "CONTAINS_EITHER_INCLUDING_NULL", "values": [null] }
+      ],
+      "expectedRowIndexes": [1]
+    }
+  ]
+}

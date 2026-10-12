@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "cases": [
+    { "id": "stemming:running", "input": "running", "expected": "run" },
+    { "id": "stemming:ponies", "input": "ponies", "expected": "poni" },
+    { "id": "stemming:relational", "input": "relational", "expected": "relat" },
+    { "id": "stemming:effective", "input": "effective", "expected": "effect" },
+    { "id": "stemming:bowdlerize", "input": "bowdlerize", "expected": "bowdler" },
+    { "id": "stemming:conflated", "input": "conflated", "expected": "conflat" },
+    { "id": "stemming:hopping", "input": "hopping", "expected": "hop" },
+    { "id": "stemming:allowance", "input": "allowance", "expected": "allow" },
+    { "id": "stemming:adoption", "input": "adoption", "expected": "adopt" }
+  ]
+}

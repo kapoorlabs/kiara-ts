@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "rows": [
+    {
+      "title": "Cast Away",
+      "plot": "A man stranded on an island returns home.",
+      "year": 2000
+    },
+    {
+      "title": "Apollo 13",
+      "plot": "Astronauts struggle to return safely.",
+      "year": 1995
+    },
+    {
+      "title": "Big",
+      "plot": "A young boy wakes up as an adult.",
+      "year": 1988
+    }
+  ],
+  "cases": [
+    {
+      "id": "keyword:best-typo",
+      "method": "best",
+      "input": "cast stranded islannd",
+      "expectedTitles": ["Cast Away"]
+    },
+    {
+      "id": "keyword:minimum-with-precondition",
+      "method": "minimum",
+      "input": "astronauts return",
+      "options": {
+        "conditions": [
+          { "field": "year", "values": [1995] }
+        ]
+      },
+      "expectedTitles": ["Apollo 13"]
+    },
+    {
+      "id": "keyword:truncation-budget",
+      "method": "best",
+      "input": "cast stranded island home",
+      "maxKeywords": 2,
+      "expectedTitles": ["Cast Away"],
+      "expectedTruncated": true
+    }
+  ]
+}

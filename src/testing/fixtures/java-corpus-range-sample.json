@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "range:contains-either-15",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "CONTAINS_EITHER", "values": [15] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "range:contains-all-15-18",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "CONTAINS_ALL", "values": [15, 18] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "range:equal-30-40",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "EQUAL", "values": ["30->40"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "range:not-contains-15",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "NOT_CONTAINS", "values": [15] }
+      ],
+      "expectedRowIndexes": [1]
+    }
+  ]
+}
