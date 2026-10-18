@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "rows": [
+    {
+      "title": "Cast Away",
+      "plot": "A man stranded on an island returns home.",
+      "year": 2000
+    },
+    {
+      "title": "Apollo 13",
+      "plot": "Astronauts struggle to return safely.",
+      "year": 1995
+    },
+    {
+      "title": "Big",
+      "plot": "A young boy wakes up as an adult.",
+      "year": 1988
+    }
+  ],
+  "cases": [
+    {
+      "id": "keyword:best-no-match",
+      "method": "best",
+      "input": "volcano submarine",
+      "expectedTitles": []
+    },
+    {
+      "id": "keyword:best-with-year-precondition",
+      "method": "best",
+      "input": "returns home",
+      "options": {
+        "conditions": [
+          { "field": "year", "values": [2000] }
+        ]
+      },
+      "expectedTitles": ["Cast Away"]
+    },
+    {
+      "id": "keyword:minimum-with-two-rows",
+      "method": "minimum",
+      "input": "return",
+      "expectedTitles": ["Apollo 13"]
+    },
+    {
+      "id": "keyword:best-typo-correction-apollo",
+      "method": "best",
+      "input": "apolo return",
+      "expectedTitles": ["Apollo 13"]
+    },
+    {
+      "id": "keyword:best-with-punctuation",
+      "method": "best",
+      "input": "cast, stranded! island?",
+      "expectedTitles": ["Cast Away"]
+    },
+    {
+      "id": "keyword:best-with-duplicate-tokens",
+      "method": "best",
+      "input": "cast cast cast",
+      "expectedTitles": ["Cast Away"]
+    },
+    {
+      "id": "keyword:truncation-single-keyword-budget",
+      "method": "best",
+      "input": "cast stranded island home",
+      "maxKeywords": 1,
+      "expectedTitles": ["Cast Away"],
+      "expectedTruncated": true
+    }
+  ]
+}

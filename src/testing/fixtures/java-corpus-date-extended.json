@@ -1,0 +1,88 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "date:day-less-than-equal-2024-01-01",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "day", "operator": "LESS_THAN_EQUAL", "values": ["2024-01-01"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "date:day-between-january-window",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "day", "operator": "BETWEEN", "lowerValue": "2024-01-01", "upperValue": "2024-01-31" }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "date:day-not-equal-2024-02-01",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "day", "operator": "NOT_EQUAL", "values": ["2024-02-01"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "date:milestones-contains-all-feb-values",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "milestones", "operator": "CONTAINS_ALL", "values": ["2024-02-01", "2024-02-15"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "date:milestones-contains-either-jan-or-feb",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "milestones", "operator": "CONTAINS_EITHER", "values": ["2024-01-15", "2024-02-15"] }
+      ],
+      "expectedRowIndexes": [0, 1]
+    },
+    {
+      "id": "date:milestones-not-contains-2024-02-15",
+      "normalizationProfile": "java",
+      "schema": "date-sample-v1",
+      "rows": [
+        { "event": "Launch", "day": "2024-01-01", "milestones": "2024-01-01,2024-01-15" },
+        { "event": "Landing", "day": "2024-02-01", "milestones": "2024-02-01,2024-02-15" }
+      ],
+      "conditions": [
+        { "field": "milestones", "operator": "NOT_CONTAINS", "values": ["2024-02-15"] }
+      ],
+      "expectedRowIndexes": [0]
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 # Feature parity checklist
 
-All rows are **planned, not implemented**. Baseline SHAs and limitations are in
-the [migration plan](migration-plan.md). No feature is omitted merely because it
+This checklist defines the parity surface. Row-by-row status and evidence are
+tracked in [parity-ledger.md](parity-ledger.md), with blocker closure status in
+[blocker-gates.md](blocker-gates.md). Baseline SHAs and limitations are in the
+[migration plan](migration-plan.md). No feature is omitted merely because it
 does not appear in the quick-start guide.
 
 ## A. All Java annotations
@@ -128,6 +130,6 @@ For every A/Q/F row attach:
 - Status: planned / implemented / verified / blocked.
 - Any intentional deviation, reason, workaround and approval.
 
-Until that ledger is populated and differential tests pass, describe the package
-as an in-progress port, not a full-parity replacement. The current proposal
-contains no passing implementation claims.
+Until all rows are verified or explicitly accepted as blocked with documented
+deviations, describe the package as an in-progress port, not a full-parity
+replacement.

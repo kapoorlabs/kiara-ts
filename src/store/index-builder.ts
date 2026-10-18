@@ -1,4 +1,4 @@
-import { QueryValidationError } from "../errors.js";
+import { NormalizationError, QueryValidationError } from "../errors.js";
 import {
   normalizeJavaLongKey,
   normalizeNativeNumber,
@@ -544,11 +544,38 @@ export function buildPreparedStoreData<T extends object>(
 
     for (const field of schema.fields) {
       const rawValue = sourceRecord[field.name];
-      const normalized = normalizeFieldValue(
-        field as SchemaField<AnyModel, string>,
-        rawValue,
-        profile,
-      );
+      let normalized: NormalizedFieldValue;
+      try {
+        normalized = normalizeFieldValue(
+          field as SchemaField<AnyModel, string>,
+          rawValue,
+          profile,
+        );
+      } catch (error) {
+        if (error instanceof QueryValidationError) {
+          throw new QueryValidationError(
+            `Failed to normalize row ${rowId} for field "${String(field.name)}": ${error.message}`,
+            "QUERY_INVALID_CONDITION",
+            {
+              rowId,
+              field: field.name,
+              ...(error.details ?? {}),
+            },
+          );
+        }
+        if (error instanceof NormalizationError) {
+          throw new NormalizationError(
+            `Failed to normalize row ${rowId} for field "${String(field.name)}": ${error.message}`,
+            error.code,
+            {
+              rowId,
+              field: field.name,
+              ...(error.details ?? {}),
+            },
+          );
+        }
+        throw error;
+      }
       values.set(field.name, normalized);
 
       const fieldIndex = mutableIndexes.get(field.name);

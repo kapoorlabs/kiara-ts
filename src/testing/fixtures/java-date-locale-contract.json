@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "dateCases": [
+    {
+      "id": "date:default-format-2024-01-31",
+      "kind": "date",
+      "value": "2024-01-31",
+      "expected": 19753
+    },
+    {
+      "id": "date:leap-day-2000-02-29",
+      "kind": "date",
+      "value": "2000-02-29",
+      "expected": 11016
+    },
+    {
+      "id": "datetime:default-format",
+      "kind": "dateTime",
+      "value": "2024-01-31 23:59:59",
+      "expected": 1706745599
+    },
+    {
+      "id": "datetime:iso-t-separator",
+      "kind": "dateTime",
+      "value": "2024-01-31T23:59:59",
+      "format": "yyyy-MM-dd'T'HH:mm:ss",
+      "expected": 1706745599
+    }
+  ],
+  "unsupportedFormatCases": [
+    {
+      "id": "date:unsupported-mmddyyyy",
+      "kind": "date",
+      "value": "2024-01-31",
+      "format": "MM/dd/yyyy",
+      "expectedErrorCode": "QUERY_INVALID_CONDITION"
+    },
+    {
+      "id": "datetime:unsupported-mmddyyyy",
+      "kind": "dateTime",
+      "value": "2024-01-31 23:59:59",
+      "format": "MM/dd/yyyy HH:mm:ss",
+      "expectedErrorCode": "QUERY_INVALID_CONDITION"
+    }
+  ],
+  "localeCases": [
+    {
+      "id": "locale:upper-i-lower-en-us",
+      "input": "I",
+      "caseInsensitive": true,
+      "expected": "i"
+    },
+    {
+      "id": "locale:upper-dotted-i-lower-en-us",
+      "input": "İ",
+      "caseInsensitive": true,
+      "expected": "i̇"
+    },
+    {
+      "id": "locale:istanbul-ascii",
+      "input": "ISTANBUL",
+      "caseInsensitive": true,
+      "expected": "istanbul"
+    },
+    {
+      "id": "locale:istanbul-dotted-i",
+      "input": "İSTANBUL",
+      "caseInsensitive": true,
+      "expected": "i̇stanbul"
+    },
+    {
+      "id": "locale:case-sensitive-preserved",
+      "input": "İSTANBUL",
+      "caseInsensitive": false,
+      "expected": "İSTANBUL"
+    }
+  ]
+}

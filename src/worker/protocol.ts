@@ -1,6 +1,7 @@
 import type { Condition } from "../query/condition.js";
 import type { KeywordSearchOptions, KeywordSearchResult } from "../query/keyword-search.js";
 import type { FieldName } from "../schema/types.js";
+import type { KiaraErrorCode, KiaraErrorDetails } from "../errors.js";
 
 export const WorkerOperation = {
   SEARCH: "search",
@@ -104,8 +105,10 @@ export interface WorkerErrorResponse {
     | "STORE_NOT_FOUND"
     | "UNKNOWN_OPERATION"
     | "CANCELLED"
-    | "EXECUTION_FAILED";
+    | "EXECUTION_FAILED"
+    | KiaraErrorCode;
   readonly message: string;
+  readonly details?: KiaraErrorDetails;
 }
 
 export type WorkerResponse<T extends object> = WorkerSuccessResponse<T> | WorkerErrorResponse;

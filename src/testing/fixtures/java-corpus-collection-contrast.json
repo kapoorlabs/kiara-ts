@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "collection:not-equal-single-token-contrast",
+      "normalizationProfile": "java",
+      "schema": "collection-contrast-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "NOT_EQUAL", "values": ["bill paxton"] }
+      ],
+      "expectedRowIndexes": [0, 1, 2]
+    },
+    {
+      "id": "collection:not-contains-token-contrast",
+      "normalizationProfile": "java",
+      "schema": "collection-contrast-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "NOT_CONTAINS", "values": ["bill paxton"] }
+      ],
+      "expectedRowIndexes": [0, 2]
+    },
+    {
+      "id": "collection:not-equal-full-collection-string",
+      "normalizationProfile": "java",
+      "schema": "collection-contrast-v1",
+      "rows": [
+        { "title": "Cast Away", "year": 2000, "actors": "Tom Hanks, Helen Hunt", "rating": 8.1 },
+        { "title": "Apollo 13", "year": 1995, "actors": "Tom Hanks, Bill Paxton", "rating": 7.6 },
+        { "title": "Big", "year": 1988, "actors": "Tom Hanks", "rating": 7.3 }
+      ],
+      "conditions": [
+        { "field": "actors", "operator": "NOT_EQUAL", "values": ["tom hanks,bill paxton"] }
+      ],
+      "expectedRowIndexes": [0, 2]
+    }
+  ]
+}

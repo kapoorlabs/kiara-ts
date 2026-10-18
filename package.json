@@ -1,21 +1,61 @@
 {
-  "name": "kiaradb",
-  "version": "0.0.0",
-  "private": true,
-  "description": "In-progress browser-first TypeScript port of Kiara DB",
+  "name": "@kapoorlabs/kiara-ts",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Browser-first TypeScript port of Kiara DB",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kapoorlabs/kiara-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kapoorlabs/kiara-ts/issues"
+  },
+  "homepage": "https://github.com/kapoorlabs/kiara-ts#readme",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kiara",
+    "search",
+    "query",
+    "typescript",
+    "in-memory"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run src",
     "test:watch": "vitest src",
+    "test:oracle:full": "vitest run src/testing/oracle-java-corpus-smoke.test.ts src/testing/oracle-java-keyword-smoke.test.ts src/testing/java-expectation-fixtures.test.ts",
+    "test:oracle:scale": "vitest run src/testing/oracle-scale-differential.test.ts",
+    "test:parity:gate": "npm run build && npm run typecheck && npm run test:oracle:full && npm run test:oracle:scale && vitest run src/query/operator-parity-matrix.test.ts && npm run accounting:java:check:ci && npm run bench:check:ci",
     "test:playwright": "npm run build && playwright test",
     "demo:repo": "npm run build && node examples/demo-repo/run-demo.mjs",
     "demo:decorators": "vitest run src/decorators/entity.test.ts",
     "bench:smoke": "npm run build && node scripts/benchmark-worker.mjs",
     "bench:check": "npm run bench:smoke && node scripts/benchmark-assert.mjs && node scripts/benchmark-record-history.mjs",
-    "bench:check:ci": "npm run bench:smoke && node scripts/benchmark-assert.mjs --profile=ci && node scripts/benchmark-record-history.mjs"
+    "bench:check:ci": "npm run bench:smoke && node scripts/benchmark-assert.mjs --profile=ci",
+    "bench:record-history": "node scripts/benchmark-record-history.mjs",
+    "accounting:java:check": "node scripts/java-test-accounting-check.mjs",
+    "accounting:java:check:ci": "node scripts/java-test-accounting-check.mjs --max-missing=0 --min-covered=448",
+    "accounting:java:sync": "node scripts/java-test-accounting-check.mjs --write-summary",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0-beta-1791301756000",

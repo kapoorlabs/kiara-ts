@@ -3,12 +3,13 @@ import { describe, expect, it } from "vitest";
 import { createCondition, type Condition } from "../query/condition.js";
 import { Operator, type OperatorType } from "../query/operator.js";
 import { defineSchema } from "../schema/define-schema.js";
-import { numberField, textField } from "../schema/field-factories.js";
+import { longField, numberField, textField } from "../schema/field-factories.js";
 import { NormalizationProfile } from "../store/types.js";
 import {
   formatOracleBatchMismatchReport,
   runImportedOracleBatchFromJson,
 } from "./oracle-differential-runner.js";
+import { JAVA_IMPORTED_ORACLE_FIXTURE_FILES } from "./java-fixture-catalog.js";
 import type { OracleImportedFixture } from "./oracle-import.js";
 
 interface MovieRow {
@@ -47,6 +48,16 @@ interface NullRow {
   title: string;
   tags: string | null;
   score: number | null;
+}
+
+interface LongRow {
+  label: string;
+  longValue: string | number;
+}
+
+interface NumberCollectionNullRow {
+  label: string;
+  numbers: string | null;
 }
 
 interface RawCondition {
@@ -102,6 +113,19 @@ const nullSchema = defineSchema<NullRow>([
   numberField("score", { nullable: true }),
 ]);
 
+const longSchema = defineSchema<LongRow>([
+  textField("label", { caseInsensitive: true }),
+  longField("longValue"),
+]);
+
+const numberCollectionNullSchema = defineSchema<NumberCollectionNullRow>([
+  textField("label", { caseInsensitive: true }),
+  textField("numbers", {
+    secondaryType: "commaSeparatedNumbers",
+    nullable: true,
+  }),
+]);
+
 function readFixture(filename: string): string {
   return readFileSync(new URL(`./fixtures/${filename}`, import.meta.url), "utf-8");
 }
@@ -124,18 +148,19 @@ function toCondition<T extends object>(raw: RawCondition): Condition<T> {
 }
 
 describe("java corpus imported-oracle smoke", () => {
-  it("runs committed java-derived corpus fixtures through batch differential pipeline", () => {
-    const json = readFixture("java-corpus-movie-sample.json");
+  it("runs designated java-derived corpus fixtures through batch differential pipeline", () => {
+    const fixtureDocuments = JAVA_IMPORTED_ORACLE_FIXTURE_FILES.map((filename) => readFixture(filename));
+    const expectedFixtureCount = fixtureDocuments.reduce((sum, documentJson) => {
+      const parsed = JSON.parse(documentJson) as {
+        readonly metadata: { readonly sourceSha: string };
+        readonly fixtures: readonly unknown[];
+      };
+      expect(parsed.metadata.sourceSha).toBe("568d1addd15e237a5fa2dfaf7538b193d5564773");
+      return sum + parsed.fixtures.length;
+    }, 0);
 
     const batch = runImportedOracleBatchFromJson(
-      [
-        json,
-        readFixture("java-corpus-range-sample.json"),
-        readFixture("java-corpus-date-sample.json"),
-        readFixture("java-corpus-datetime-sample.json"),
-        readFixture("java-corpus-date-range-sample.json"),
-        readFixture("java-corpus-null-sample.json"),
-      ],
+      fixtureDocuments,
       (fixture) => {
         const imported = fixture as OracleImportedFixture & {
           readonly schema: string;
@@ -214,19 +239,59 @@ describe("java corpus imported-oracle smoke", () => {
           };
         }
 
+        if (imported.schema === "long-sample-v1") {
+          return {
+            id: imported.id,
+            normalizationProfile: NormalizationProfile.JAVA,
+            schema: longSchema,
+            rows: imported.rows as readonly LongRow[],
+            conditions: imported.conditions.map((condition) => toCondition<LongRow>(condition)),
+            expectedRowIndexes: imported.expectedRowIndexes,
+            limit: imported.limit,
+          };
+        }
+
+        if (imported.schema === "number-collection-null-v1") {
+          return {
+            id: imported.id,
+            normalizationProfile: NormalizationProfile.JAVA,
+            schema: numberCollectionNullSchema,
+            rows: imported.rows as readonly NumberCollectionNullRow[],
+            conditions: imported.conditions.map((condition) =>
+              toCondition<NumberCollectionNullRow>(condition)
+            ),
+            expectedRowIndexes: imported.expectedRowIndexes,
+            limit: imported.limit,
+          };
+        }
+
+        if (imported.schema === "collection-contrast-v1") {
+          return {
+            id: imported.id,
+            normalizationProfile: NormalizationProfile.JAVA,
+            schema: movieSchema,
+            rows: imported.rows as readonly MovieRow[],
+            conditions: imported.conditions.map((condition) => toCondition<MovieRow>(condition)),
+            expectedRowIndexes: imported.expectedRowIndexes,
+            limit: imported.limit,
+          };
+        }
+
         throw new Error(`Unsupported fixture schema "${imported.schema}".`);
       },
     );
 
-    expect(batch.documentCount).toBe(6);
-    expect(batch.total).toBe(25);
-    expect(batch.passed).toBe(25);
+    expect(batch.documentCount).toBe(JAVA_IMPORTED_ORACLE_FIXTURE_FILES.length);
+    expect(batch.total).toBe(expectedFixtureCount);
+    expect(batch.passed).toBe(expectedFixtureCount);
     expect(batch.failed).toBe(0);
     expect(batch.failedByCategory).toEqual({});
     expect(batch.mismatchSummary).toEqual([]);
 
     const report = formatOracleBatchMismatchReport(batch);
-    expect(report).toContain("documents=6 fixtures=25 passed=25 failed=0 passRate=100.00%");
+    expect(report).toContain(
+      `documents=${JAVA_IMPORTED_ORACLE_FIXTURE_FILES.length} fixtures=${expectedFixtureCount} passed=${expectedFixtureCount} failed=0 passRate=100.00%`,
+    );
     expect(report).toContain("| none | 0 | 0.00% |");
   });
 });

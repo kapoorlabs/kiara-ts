@@ -147,6 +147,8 @@ Ship a documented `java` semantic profile as the migration default. Keep
 intentional modern semantics explicit; do not silently repair numeric results
 while claiming exact parity. Avoid many independent feature flags: one profile,
 explicit schema types and a short documented deviation registry are sufficient.
+Current closure status for these gates is tracked in
+[blocker-gates.md](blocker-gates.md).
 
 | Issue | Status / effect | Plan and acceptance gate |
 |---|---|---|

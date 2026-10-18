@@ -4,7 +4,7 @@ import { createCondition } from "../query/condition.js";
 import { Operator } from "../query/operator.js";
 import { StoreSearch } from "../query/store-search.js";
 import { defineSchema } from "../schema/define-schema.js";
-import { numberField, textField } from "../schema/field-factories.js";
+import { booleanField, enumField, longField, numberField, textField } from "../schema/field-factories.js";
 import { Store } from "./store.js";
 import { NormalizationProfile } from "./types.js";
 
@@ -18,6 +18,18 @@ interface MovieRow {
 interface HiddenMovieRow {
   title: string;
   privateNotes: string;
+}
+
+interface NumberCollectionRow {
+  label: string;
+  numbers: string | null;
+}
+
+interface PrimitiveParityRow {
+  id: string;
+  active: boolean;
+  tier: "bronze" | "silver" | "gold";
+  longScore: string | number;
 }
 
 const movieSchema = defineSchema<MovieRow>([
@@ -36,6 +48,21 @@ function preparedStore(): Store<MovieRow> {
   return store;
 }
 
+function preparedPrimitiveParityStore(): Store<PrimitiveParityRow> {
+  const schema = defineSchema<PrimitiveParityRow>([
+    textField("id", { caseInsensitive: true }),
+    booleanField("active"),
+    enumField("tier", ["bronze", "silver", "gold"]),
+    longField("longScore"),
+  ]);
+  const store = new Store(schema, { normalizationProfile: NormalizationProfile.JAVA });
+  store.loadRow({ id: "row-a", active: true, tier: "gold", longScore: "9007199254740993" });
+  store.loadRow({ id: "row-b", active: false, tier: "silver", longScore: 42 });
+  store.loadRow({ id: "row-c", active: true, tier: "bronze", longScore: "7" });
+  store.prepare();
+  return store;
+}
+
 function preparedIgnoreIndexStore(): Store<HiddenMovieRow> {
   const schema = defineSchema<HiddenMovieRow>([
     textField("title", { caseInsensitive: true }),
@@ -44,6 +71,23 @@ function preparedIgnoreIndexStore(): Store<HiddenMovieRow> {
   const store = new Store(schema, { normalizationProfile: NormalizationProfile.JAVA });
   store.loadRow({ title: "Cast Away", privateNotes: "internal island marker" });
   store.loadRow({ title: "Apollo 13", privateNotes: "internal moon marker" });
+  store.prepare();
+  return store;
+}
+
+function preparedNumberCollectionStore(): Store<NumberCollectionRow> {
+  const schema = defineSchema<NumberCollectionRow>([
+    textField("label", { caseInsensitive: true }),
+    textField("numbers", {
+      secondaryType: "commaSeparatedNumbers",
+      nullable: true,
+    }),
+  ]);
+  const store = new Store(schema, { normalizationProfile: NormalizationProfile.JAVA });
+  store.loadRow({ label: "A", numbers: "1,5,7" });
+  store.loadRow({ label: "B", numbers: "5" });
+  store.loadRow({ label: "C", numbers: "9" });
+  store.loadRow({ label: "D", numbers: null });
   store.prepare();
   return store;
 }
@@ -131,6 +175,80 @@ describe("Store search", () => {
       }),
     ]);
     expect(results.map((row) => row.title)).toEqual(["Cast Away", "Big"]);
+  });
+
+  it("differentiates collection NOT_EQUAL from NOT_CONTAINS token semantics", () => {
+    const store = preparedStore();
+
+    const notEqual = store.search([
+      createCondition<MovieRow, "actors">({
+        field: "actors",
+        operator: Operator.NOT_EQUAL,
+        values: ["bill paxton"],
+      }),
+    ]);
+
+    const notContains = store.search([
+      createCondition<MovieRow, "actors">({
+        field: "actors",
+        operator: Operator.NOT_CONTAINS,
+        values: ["bill paxton"],
+      }),
+    ]);
+
+    expect(notEqual.map((row) => row.title)).toEqual(["Cast Away", "Apollo 13", "Big"]);
+    expect(notContains.map((row) => row.title)).toEqual(["Cast Away", "Big"]);
+  });
+
+  it("supports null-aware contains semantics for commaSeparatedNumbers", () => {
+    const store = preparedNumberCollectionStore();
+    const includesNullOrFive = store.search([
+      createCondition<NumberCollectionRow, "numbers">({
+        field: "numbers",
+        operator: Operator.CONTAINS_EITHER_INCLUDING_NULL,
+        values: [null, 5],
+      }),
+    ]);
+    const notContainsFive = store.search([
+      createCondition<NumberCollectionRow, "numbers">({
+        field: "numbers",
+        operator: Operator.NOT_CONTAINS,
+        values: [5],
+      }),
+    ]);
+
+    expect(includesNullOrFive.map((row) => row.label)).toEqual(["A", "B", "D"]);
+    expect(notContainsFive.map((row) => row.label)).toEqual(["C", "D"]);
+  });
+
+  it("supports primitive parity behavior for boolean/enum/long scalar queries", () => {
+    const store = preparedPrimitiveParityStore();
+
+    const activeRows = store.search([
+      createCondition<PrimitiveParityRow, "active">({
+        field: "active",
+        operator: Operator.EQUAL,
+        values: [true],
+      }),
+    ]);
+    const goldRows = store.search([
+      createCondition<PrimitiveParityRow, "tier">({
+        field: "tier",
+        operator: Operator.EQUAL,
+        values: ["gold"],
+      }),
+    ]);
+    const highLongRows = store.search([
+      createCondition<PrimitiveParityRow, "longScore">({
+        field: "longScore",
+        operator: Operator.GREATER_THAN,
+        values: [1000],
+      }),
+    ]);
+
+    expect(activeRows.map((row) => row.id)).toEqual(["row-a", "row-c"]);
+    expect(goldRows.map((row) => row.id)).toEqual(["row-a"]);
+    expect(highLongRows.map((row) => row.id)).toEqual(["row-a"]);
   });
 
   it("builds trie with deduplicated nodes for shared prefixes", () => {

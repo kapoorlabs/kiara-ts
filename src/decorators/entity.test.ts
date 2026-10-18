@@ -8,6 +8,8 @@ import {
   CommaSeperatedDateRanges,
   Entity,
   NumberField,
+  OneEditAway,
+  Predictable,
   StemmedIndex,
   Text,
   getEntitySchema,
@@ -141,5 +143,23 @@ describe("Entity decorators", () => {
 
     const schema = getEntitySchema(StemmedEntity);
     expect(schema.fields[0]?.stemmedIndex).toBe(true);
+  });
+
+  it("maps OneEditAway and Predictable metadata to schema fields", () => {
+    initializeDecoratorMetadata();
+
+    @Entity
+    class DictionaryDecoratorsEntity {
+      @Text()
+      @OneEditAway()
+      @Predictable()
+      public routeToken = "";
+    }
+
+    const schema = getEntitySchema(DictionaryDecoratorsEntity);
+    expect(schema.fields[0]).toMatchObject({
+      oneEditAway: true,
+      predictable: true,
+    });
   });
 });

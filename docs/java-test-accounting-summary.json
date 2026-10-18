@@ -1,0 +1,213 @@
+{
+  "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+  "totalDeclarations": 448,
+  "classCount": 25,
+  "statuses": {
+    "covered": 448,
+    "nonportable": 0,
+    "missing": 0
+  },
+  "coveragePercent": 100,
+  "byClass": [
+    {
+      "className": "BooksTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/BooksTest.java",
+      "total": 13,
+      "covered": 13,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "ConfigTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/ConfigTest.java",
+      "total": 9,
+      "covered": 9,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "CongressResignationsTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/CongressResignationsTest.java",
+      "total": 9,
+      "covered": 9,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "CreateNodeTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/CreateNodeTest.java",
+      "total": 46,
+      "covered": 46,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "DeathYearTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/DeathYearTest.java",
+      "total": 20,
+      "covered": 20,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "DummyObjectTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/DummyObjectTest.java",
+      "total": 5,
+      "covered": 5,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexKeys1_30Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexKeys1_30Test.java",
+      "total": 28,
+      "covered": 28,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexKeys31_60Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexKeys31_60Test.java",
+      "total": 30,
+      "covered": 30,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexKeys61_90Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexKeys61_90Test.java",
+      "total": 30,
+      "covered": 30,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexTest1_30Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexTest1_30Test.java",
+      "total": 12,
+      "covered": 12,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexTest31_60Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexTest31_60Test.java",
+      "total": 16,
+      "covered": 16,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "IndexTest61_90Test",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/IndexTest61_90Test.java",
+      "total": 28,
+      "covered": 28,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "LoadTableTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/LoadTableTest.java",
+      "total": 8,
+      "covered": 8,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "LogicalUtilTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/util/LogicalUtilTest.java",
+      "total": 25,
+      "covered": 25,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "MatchingChildTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/loader/MatchingChildTest.java",
+      "total": 9,
+      "covered": 9,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "MovieTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/MovieTest.java",
+      "total": 42,
+      "covered": 42,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "MovieTestStore",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/MovieTestStore.java",
+      "total": 9,
+      "covered": 9,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "NullTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/NullTest.java",
+      "total": 3,
+      "covered": 3,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "OrderedKeysTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/domain/OrderedKeysTest.java",
+      "total": 10,
+      "covered": 10,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "PojoAdapterTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/adapters/PojoAdapterTest.java",
+      "total": 35,
+      "covered": 35,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "RangeTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/RangeTest.java",
+      "total": 18,
+      "covered": 18,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "SearchableRangeTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/domain/SearchableRangeTest.java",
+      "total": 9,
+      "covered": 9,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "SpellCheckUtilTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/util/SpellCheckUtilTest.java",
+      "total": 16,
+      "covered": 16,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "StoreTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/domain/StoreTest.java",
+      "total": 1,
+      "covered": 1,
+      "nonportable": 0,
+      "missing": 0
+    },
+    {
+      "className": "SurveyTest",
+      "sourcePath": "src/test/java/com/kapoorlabs/kiara/test/search/SurveyTest.java",
+      "total": 17,
+      "covered": 17,
+      "nonportable": 0,
+      "missing": 0
+    }
+  ]
+}

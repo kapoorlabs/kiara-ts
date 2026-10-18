@@ -118,6 +118,46 @@ function normalizeCollectionConditionValues(
   return values.map((value) => normalizeConditionValue(field, value, data.normalizationProfile));
 }
 
+function parseCollectionConditionTokens(rawValue: unknown): readonly unknown[] {
+  if (typeof rawValue !== "string") {
+    return [rawValue];
+  }
+
+  const tokens = rawValue
+    .split(",")
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+
+  return tokens.length === 0 ? [rawValue] : tokens;
+}
+
+function normalizeCollectionEqualityKeys(
+  field: SchemaField<AnyModel, string>,
+  condition: Condition<AnyModel, string>,
+  data: PreparedStoreData<AnyModel>,
+): { readonly keys: readonly string[]; readonly includesNull: boolean } {
+  const values = condition.values ?? [];
+  const keys: string[] = [];
+  let includesNull = false;
+
+  for (const rawValue of values) {
+    if (rawValue === null || rawValue === undefined) {
+      includesNull = true;
+      continue;
+    }
+
+    const normalizedTokens = parseCollectionConditionTokens(rawValue).map((token) =>
+      normalizeConditionValue(field, token, data.normalizationProfile)
+    );
+    const encodedKey = normalizedTokens
+      .map((token) => encodeNormalizedScalar(token))
+      .join("|");
+    keys.push(encodedKey);
+  }
+
+  return { keys, includesNull };
+}
+
 function resolveEquality(
   index: FieldIndex,
   values: readonly NormalizedScalar[],
@@ -167,6 +207,37 @@ function resolveNotContainsCollection(
   }
   const normalizedValues = normalizeCollectionConditionValues(field, condition, data);
   const forbiddenRows = resolveEquality(index, normalizedValues);
+  return subtract(allRows, forbiddenRows);
+}
+
+function resolveNotEqualCollection(
+  condition: Condition<AnyModel, string>,
+  field: SchemaField<AnyModel, string>,
+  index: FieldIndex,
+  allRows: Set<number>,
+  data: PreparedStoreData<AnyModel>,
+): Set<number> {
+  const { keys, includesNull } = normalizeCollectionEqualityKeys(field, condition, data);
+  const forbiddenRows = new Set<number>();
+
+  for (const key of keys) {
+    const rows = index.collectionFullKeys.get(key);
+    if (rows !== undefined) {
+      for (const rowId of rows) {
+        forbiddenRows.add(rowId);
+      }
+    }
+  }
+
+  if (includesNull) {
+    for (const row of data.normalizedRows) {
+      const stored = row.values.get(field.name as FieldName<AnyModel>);
+      if (stored?.collectionValues === undefined) {
+        forbiddenRows.add(row.id);
+      }
+    }
+  }
+
   return subtract(allRows, forbiddenRows);
 }
 
@@ -360,6 +431,15 @@ function evaluateConditionFallback(
     case Operator.EQUAL:
       return normalizedValues.some((value) => storedValue.scalar === value);
     case Operator.NOT_EQUAL:
+      if (isCollectionCondition(field)) {
+        const { keys, includesNull } = normalizeCollectionEqualityKeys(field, condition, data);
+        const storedCollection = storedValue.collectionValues;
+        if (storedCollection === undefined) {
+          return !includesNull;
+        }
+        const storedKey = storedCollection.map((value) => encodeNormalizedScalar(value)).join("|");
+        return keys.every((key) => key !== storedKey);
+      }
       return normalizedValues.every((value) => storedValue.scalar !== value);
     case Operator.LESS_THAN:
     case Operator.LESS_THAN_EQUAL:
@@ -440,6 +520,9 @@ function resolveConditionCandidates(
       return resolveEquality(index, values);
     }
     case Operator.NOT_EQUAL: {
+      if (isCollectionCondition(field)) {
+        return resolveNotEqualCollection(condition, field, index, universe, data);
+      }
       const equalRows = resolveEquality(index, normalizeScalarValues(field, condition, data));
       return subtract(universe, equalRows);
     }

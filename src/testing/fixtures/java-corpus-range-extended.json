@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "range:not-equal-10-20",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "NOT_EQUAL", "values": ["10->20"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "range:contains-either-35",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "CONTAINS_EITHER", "values": [35] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "range:contains-all-31-and-39",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "CONTAINS_ALL", "values": [31, 39] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "range:contains-either-boundary-20",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "CONTAINS_EITHER", "values": [20] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "range:not-contains-31",
+      "normalizationProfile": "java",
+      "schema": "range-sample-v1",
+      "rows": [
+        { "name": "Window A", "window": "10->20" },
+        { "name": "Window B", "window": "30->40" }
+      ],
+      "conditions": [
+        { "field": "window", "operator": "NOT_CONTAINS", "values": [31] }
+      ],
+      "expectedRowIndexes": [0]
+    }
+  ]
+}

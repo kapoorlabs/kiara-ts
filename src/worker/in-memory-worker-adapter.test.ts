@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createCondition } from "../query/condition.js";
+import { Operator } from "../query/operator.js";
 import { defineSchema } from "../schema/define-schema.js";
 import { numberField, textField } from "../schema/field-factories.js";
 import { Store } from "../store/store.js";
@@ -128,6 +129,32 @@ describe("InMemoryWorkerAdapter", () => {
     expect(response.ok).toBe(false);
     if (!response.ok) {
       expect(response.errorCode).toBe("STORE_NOT_FOUND");
+    }
+  });
+
+  it("propagates Kiara error code/details for validation failures", async () => {
+    const adapter = new InMemoryWorkerAdapter<MovieRow>();
+    adapter.registerStore("movies", createStore());
+
+    const response = await adapter.execute({
+      requestId: "r5b",
+      storeId: "movies",
+      operation: WorkerOperation.SEARCH,
+      payload: {
+        conditions: [
+          createCondition<MovieRow, "title">({
+            field: "title",
+            operator: Operator.CONTAINS_ALL,
+            values: ["cast away"],
+          }),
+        ],
+      },
+    });
+
+    expect(response.ok).toBe(false);
+    if (!response.ok) {
+      expect(response.errorCode).toBe("QUERY_INVALID_CONDITION");
+      expect(response.details).toMatchObject({ field: "title" });
     }
   });
 

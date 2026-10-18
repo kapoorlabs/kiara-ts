@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "numbers:contains-either-5",
+      "normalizationProfile": "java",
+      "schema": "number-collection-null-v1",
+      "rows": [
+        { "label": "A", "numbers": "1,5,7" },
+        { "label": "B", "numbers": "5" },
+        { "label": "C", "numbers": "9" },
+        { "label": "D", "numbers": null }
+      ],
+      "conditions": [
+        { "field": "numbers", "operator": "CONTAINS_EITHER", "values": [5] }
+      ],
+      "expectedRowIndexes": [0, 1]
+    },
+    {
+      "id": "numbers:contains-all-1-and-7",
+      "normalizationProfile": "java",
+      "schema": "number-collection-null-v1",
+      "rows": [
+        { "label": "A", "numbers": "1,5,7" },
+        { "label": "B", "numbers": "5" },
+        { "label": "C", "numbers": "9" },
+        { "label": "D", "numbers": null }
+      ],
+      "conditions": [
+        { "field": "numbers", "operator": "CONTAINS_ALL", "values": [1, 7] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "numbers:not-contains-5",
+      "normalizationProfile": "java",
+      "schema": "number-collection-null-v1",
+      "rows": [
+        { "label": "A", "numbers": "1,5,7" },
+        { "label": "B", "numbers": "5" },
+        { "label": "C", "numbers": "9" },
+        { "label": "D", "numbers": null }
+      ],
+      "conditions": [
+        { "field": "numbers", "operator": "NOT_CONTAINS", "values": [5] }
+      ],
+      "expectedRowIndexes": [2, 3]
+    },
+    {
+      "id": "numbers:contains-either-including-null-or-5",
+      "normalizationProfile": "java",
+      "schema": "number-collection-null-v1",
+      "rows": [
+        { "label": "A", "numbers": "1,5,7" },
+        { "label": "B", "numbers": "5" },
+        { "label": "C", "numbers": "9" },
+        { "label": "D", "numbers": null }
+      ],
+      "conditions": [
+        { "field": "numbers", "operator": "CONTAINS_EITHER_INCLUDING_NULL", "values": [null, 5] }
+      ],
+      "expectedRowIndexes": [0, 1, 3]
+    }
+  ]
+}

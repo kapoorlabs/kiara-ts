@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "long:equal-max-collapsed-precision",
+      "normalizationProfile": "java",
+      "schema": "long-sample-v1",
+      "rows": [
+        { "label": "nearMaxA", "longValue": "9223372036854775806" },
+        { "label": "nearMaxB", "longValue": "9223372036854775807" },
+        { "label": "min", "longValue": "-9223372036854775808" },
+        { "label": "decimalPos", "longValue": "19.8" },
+        { "label": "decimalNeg", "longValue": "-19.8" },
+        { "label": "overMax", "longValue": "922337203685477580700" },
+        { "label": "underMin", "longValue": "-922337203685477580800" }
+      ],
+      "conditions": [
+        { "field": "longValue", "values": ["9223372036854775807"] }
+      ],
+      "expectedRowIndexes": [0, 1, 5]
+    },
+    {
+      "id": "long:equal-min-with-saturation",
+      "normalizationProfile": "java",
+      "schema": "long-sample-v1",
+      "rows": [
+        { "label": "nearMaxA", "longValue": "9223372036854775806" },
+        { "label": "nearMaxB", "longValue": "9223372036854775807" },
+        { "label": "min", "longValue": "-9223372036854775808" },
+        { "label": "decimalPos", "longValue": "19.8" },
+        { "label": "decimalNeg", "longValue": "-19.8" },
+        { "label": "overMax", "longValue": "922337203685477580700" },
+        { "label": "underMin", "longValue": "-922337203685477580800" }
+      ],
+      "conditions": [
+        { "field": "longValue", "values": ["-9223372036854775808"] }
+      ],
+      "expectedRowIndexes": [2, 6]
+    },
+    {
+      "id": "long:equal-truncated-decimals",
+      "normalizationProfile": "java",
+      "schema": "long-sample-v1",
+      "rows": [
+        { "label": "nearMaxA", "longValue": "9223372036854775806" },
+        { "label": "nearMaxB", "longValue": "9223372036854775807" },
+        { "label": "min", "longValue": "-9223372036854775808" },
+        { "label": "decimalPos", "longValue": "19.8" },
+        { "label": "decimalNeg", "longValue": "-19.8" },
+        { "label": "overMax", "longValue": "922337203685477580700" },
+        { "label": "underMin", "longValue": "-922337203685477580800" }
+      ],
+      "conditions": [
+        { "field": "longValue", "values": [19] }
+      ],
+      "expectedRowIndexes": [3]
+    },
+    {
+      "id": "long:between-negative-window",
+      "normalizationProfile": "java",
+      "schema": "long-sample-v1",
+      "rows": [
+        { "label": "nearMaxA", "longValue": "9223372036854775806" },
+        { "label": "nearMaxB", "longValue": "9223372036854775807" },
+        { "label": "min", "longValue": "-9223372036854775808" },
+        { "label": "decimalPos", "longValue": "19.8" },
+        { "label": "decimalNeg", "longValue": "-19.8" },
+        { "label": "overMax", "longValue": "922337203685477580700" },
+        { "label": "underMin", "longValue": "-922337203685477580800" }
+      ],
+      "conditions": [
+        { "field": "longValue", "operator": "BETWEEN", "lowerValue": -20, "upperValue": 0 }
+      ],
+      "expectedRowIndexes": [4]
+    },
+    {
+      "id": "long:greater-than-zero",
+      "normalizationProfile": "java",
+      "schema": "long-sample-v1",
+      "rows": [
+        { "label": "nearMaxA", "longValue": "9223372036854775806" },
+        { "label": "nearMaxB", "longValue": "9223372036854775807" },
+        { "label": "min", "longValue": "-9223372036854775808" },
+        { "label": "decimalPos", "longValue": "19.8" },
+        { "label": "decimalNeg", "longValue": "-19.8" },
+        { "label": "overMax", "longValue": "922337203685477580700" },
+        { "label": "underMin", "longValue": "-922337203685477580800" }
+      ],
+      "conditions": [
+        { "field": "longValue", "operator": "GREATER_THAN", "values": [0] }
+      ],
+      "expectedRowIndexes": [0, 1, 3, 5]
+    }
+  ]
+}

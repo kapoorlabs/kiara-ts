@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "sourceSha": "568d1addd15e237a5fa2dfaf7538b193d5564773",
+    "javaVersion": "17",
+    "locale": "en_US",
+    "timeZone": "UTC"
+  },
+  "fixtures": [
+    {
+      "id": "daterange:validDate-equal-landing-window",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "validDate", "operator": "EQUAL", "values": ["2020-01-11->2020-01-20"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "daterange:validDate-not-equal-landing-window",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "validDate", "operator": "NOT_EQUAL", "values": ["2020-01-11->2020-01-20"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "daterange:dateWindows-not-contains-2020-02-02",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "dateWindows", "operator": "NOT_CONTAINS", "values": ["2020-02-02"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "datetimerange:validTime-contains-all-3am-and-8am",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "validTime", "operator": "CONTAINS_ALL", "values": ["2020-01-03 03:00:00", "2020-01-03 08:00:00"] }
+      ],
+      "expectedRowIndexes": [1]
+    },
+    {
+      "id": "datetimerange:timeWindows-contains-either-2020-01-02-06",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "timeWindows", "operator": "CONTAINS_EITHER", "values": ["2020-01-02 06:00:00"] }
+      ],
+      "expectedRowIndexes": [0]
+    },
+    {
+      "id": "compound:validDate-contains-and-timeWindows-not-contains",
+      "normalizationProfile": "java",
+      "schema": "date-range-sample-v1",
+      "rows": [
+        {
+          "event": "Launch Window",
+          "validDate": "2020-01-01->2020-01-10",
+          "dateWindows": "2020-01-01->2020-01-10,2020-02-01->2020-02-05",
+          "validTime": "2020-01-01 00:00:00->2020-01-01 12:00:00",
+          "timeWindows": "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00"
+        },
+        {
+          "event": "Landing Window",
+          "validDate": "2020-01-11->2020-01-20",
+          "dateWindows": "2020-01-11->2020-01-20",
+          "validTime": "2020-01-03 00:00:00->2020-01-03 12:00:00",
+          "timeWindows": "2020-01-03 00:00:00->2020-01-03 12:00:00"
+        }
+      ],
+      "conditions": [
+        { "field": "validDate", "operator": "CONTAINS_EITHER", "values": ["2020-01-05"] },
+        { "field": "timeWindows", "operator": "NOT_CONTAINS", "values": ["2020-01-03 06:00:00"] }
+      ],
+      "expectedRowIndexes": [0]
+    }
+  ]
+}

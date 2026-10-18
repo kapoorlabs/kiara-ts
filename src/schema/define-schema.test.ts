@@ -25,9 +25,16 @@ describe("defineSchema", () => {
   });
 
   it("rejects duplicate field names", () => {
-    expect(() =>
-      defineSchema<MovieRow>([textField("title"), textField("title")]),
-    ).toThrowError(SchemaValidationError);
+    try {
+      defineSchema<MovieRow>([textField("title"), textField("title")]);
+      throw new Error("Expected duplicate-field schema validation to throw.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(SchemaValidationError);
+      expect(error).toMatchObject({
+        code: "SCHEMA_DUPLICATE_FIELD",
+        details: { field: "title" },
+      });
+    }
   });
 
   it("requires enum values for enum fields", () => {
@@ -43,7 +50,7 @@ describe("defineSchema", () => {
   });
 
   it("rejects conflicting secondary-type declarations", () => {
-    expect(() =>
+    try {
       defineSchema<MovieRow>([
         {
           name: "title",
@@ -51,7 +58,33 @@ describe("defineSchema", () => {
           secondaryType: "dateFormat",
           secondaryTypes: ["dateTimeFormat"],
         },
-      ]),
-    ).toThrowError(SchemaValidationError);
+      ]);
+      throw new Error("Expected conflicting secondaryType schema validation to throw.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(SchemaValidationError);
+      expect(error).toMatchObject({
+        code: "SCHEMA_INVALID_SECONDARY_TYPE",
+        details: { field: "title" },
+      });
+    }
+  });
+
+  it("rejects secondaryTypes declarations that do not resolve to exactly one value", () => {
+    try {
+      defineSchema<MovieRow>([
+        {
+          name: "title",
+          kind: "text",
+          secondaryTypes: ["dateFormat", "dateTimeFormat"],
+        },
+      ]);
+      throw new Error("Expected ambiguous secondaryTypes schema validation to throw.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(SchemaValidationError);
+      expect(error).toMatchObject({
+        code: "SCHEMA_INVALID_SECONDARY_TYPE",
+        details: { field: "title" },
+      });
+    }
   });
 });

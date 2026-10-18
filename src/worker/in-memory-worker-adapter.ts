@@ -1,4 +1,5 @@
 import { KeywordSearch } from "../query/keyword-search.js";
+import { KiaraError } from "../errors.js";
 import type { FieldName } from "../schema/types.js";
 import { Store } from "../store/store.js";
 import {
@@ -135,6 +136,18 @@ export class InMemoryWorkerAdapter<T extends object> {
         result,
       };
     } catch (error) {
+      if (error instanceof KiaraError) {
+        return {
+          requestId: request.requestId,
+          storeId: request.storeId,
+          operation: request.operation,
+          ok: false,
+          errorCode: error.code,
+          message: error.message,
+          ...(error.details === undefined ? {} : { details: error.details }),
+        };
+      }
+
       return {
         requestId: request.requestId,
         storeId: request.storeId,

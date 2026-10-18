@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { StoreStateError } from "../errors.js";
+import { NormalizationError, StoreStateError } from "../errors.js";
 import { defineSchema } from "../schema/define-schema.js";
 import { numberField, textField } from "../schema/field-factories.js";
 import { StoreLoader, buildPreparedStore } from "./store-loader.js";
@@ -59,5 +59,34 @@ describe("Store lifecycle", () => {
     expect(store.queryAll()).toEqual([{ title: "Cast Away", year: 2000 }]);
     expect(replacement.getState()).toBe(StoreState.READY);
     expect(replacement.queryAll().map((row) => row.title)).toEqual(["Sully", "Big"]);
+  });
+
+  it("fails prepare with field-level diagnostics when loaded rows cannot be normalized", () => {
+    const store = new Store(movieSchema);
+    store.loadRow({ title: "Cast Away", year: "abc" as unknown as number });
+
+    try {
+      store.prepare();
+      throw new Error("Expected invalid row normalization to fail during prepare.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(NormalizationError);
+      expect(error).toMatchObject({
+        code: "NORMALIZATION_INVALID_NUMBER",
+        details: { rowId: 0, field: "year" },
+      });
+      expect(store.getState()).toBe(StoreState.FAILED);
+    }
+  });
+
+  it("exposes frozen prepared-data boundary collections", () => {
+    const store = buildPreparedStore(movieSchema, [
+      { title: "Cast Away", year: 2000 },
+      { title: "Apollo 13", year: 1995 },
+    ]);
+
+    const preparedData = store.getPreparedData();
+    expect(Object.isFrozen(preparedData.rows)).toBe(true);
+    expect(Object.isFrozen(preparedData.rowIds)).toBe(true);
+    expect(Object.isFrozen(preparedData.normalizedRows)).toBe(true);
   });
 });
