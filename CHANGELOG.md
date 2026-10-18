@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.0] - 2026-10-18
+## [1.0.0] - 2026-10-18
 
 ### Added
 - Typed schemas and decorators for defining searchable records.
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Numeric, date, and date-time range searches.
 - Keyword search, typo correction, stemming, and prefix predictions.
 - Selected-field projections, result limits, and worker adapters.
-- Runnable movie-search and airport-suggestion examples.
+- Runnable schema, decorator, and worker examples.
 
 ### Changed
 - Package metadata hardened for public npm publication:
