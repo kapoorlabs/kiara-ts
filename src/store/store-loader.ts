@@ -14,9 +14,7 @@ export class StoreLoader<T extends object> {
   }
 
   public loadRows(rows: Iterable<T>): void {
-    for (const row of rows) {
-      this.store.loadRow(row);
-    }
+    this.store.loadRows(rows);
   }
 
   public prepareForSearch(): void {

@@ -55,6 +55,17 @@ export class Store<T extends object> {
     this.rows.push(row);
   }
 
+  public loadRows(rows: Iterable<T>): void {
+    if (this.state !== StoreState.LOADING) {
+      throw new StoreStateError("Rows can be loaded only while the store is in loading state.", {
+        state: this.state,
+      });
+    }
+    for (const row of rows) {
+      this.rows.push(row);
+    }
+  }
+
   public prepare(): void {
     if (this.state !== StoreState.LOADING) {
       throw new StoreStateError("Store can only be prepared from loading state.", {

@@ -39,7 +39,7 @@ Pass `getEntitySchema(YourClass)` to `Store`.
 ## Store lifecycle
 
 1. Create a `Store` with a schema.
-2. Call `loadRow(record)`, or use `new StoreLoader(store).loadRows(records)`.
+2. Call `loadRows(records)` (or `loadRow(record)` for one record at a time).
 3. Call `prepare()` before querying. It builds the internal indexes.
 4. Use `search(conditions)` or `queryAll()` to retrieve records.
 

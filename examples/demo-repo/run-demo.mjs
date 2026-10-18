@@ -51,9 +51,7 @@ const movieRows = [
 ];
 
 const store = new Store(movieSchema, { normalizationProfile: NormalizationProfile.JAVA });
-for (const row of movieRows) {
-  store.loadRow(row);
-}
+store.loadRows(movieRows);
 store.prepare();
 
 const structuredResults = store.search([
@@ -104,9 +102,11 @@ const nullSchema = defineSchema([
 ]);
 
 const nullStore = new Store(nullSchema, { normalizationProfile: NormalizationProfile.JAVA });
-nullStore.loadRow({ title: "Known", tags: "alpha,beta", score: 10 });
-nullStore.loadRow({ title: "Unknown", tags: null, score: null });
-nullStore.loadRow({ title: "Partial", tags: "gamma", score: null });
+nullStore.loadRows([
+  { title: "Known", tags: "alpha,beta", score: 10 },
+  { title: "Unknown", tags: null, score: null },
+  { title: "Partial", tags: "gamma", score: null },
+]);
 nullStore.prepare();
 
 const nullSemanticsResults = {
@@ -132,16 +132,18 @@ const dateRangeSchema = defineSchema([
 ]);
 
 const dateRangeStore = new Store(dateRangeSchema, { normalizationProfile: NormalizationProfile.JAVA });
-dateRangeStore.loadRow({
-  event: "Launch Window",
-  validDate: "2020-01-01->2020-01-10",
-  timeWindows: "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00",
-});
-dateRangeStore.loadRow({
-  event: "Landing Window",
-  validDate: "2020-01-11->2020-01-20",
-  timeWindows: "2020-01-03 00:00:00->2020-01-03 12:00:00",
-});
+dateRangeStore.loadRows([
+  {
+    event: "Launch Window",
+    validDate: "2020-01-01->2020-01-10",
+    timeWindows: "2020-01-01 00:00:00->2020-01-01 12:00:00,2020-01-02 00:00:00->2020-01-02 12:00:00",
+  },
+  {
+    event: "Landing Window",
+    validDate: "2020-01-11->2020-01-20",
+    timeWindows: "2020-01-03 00:00:00->2020-01-03 12:00:00",
+  },
+]);
 dateRangeStore.prepare();
 
 const rangeAndDateTimeResults = {

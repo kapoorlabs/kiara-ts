@@ -29,12 +29,11 @@ describe("Store lifecycle", () => {
 
   it("supports loading and querying after prepare", () => {
     const store = new Store(movieSchema);
-    const loader = new StoreLoader(store);
-    loader.loadRows([
+    store.loadRows([
       { title: "Cast Away", year: 2000 },
       { title: "Apollo 13", year: 1995 },
     ]);
-    loader.prepareForSearch();
+    store.prepare();
 
     expect(store.getState()).toBe(StoreState.READY);
     expect(store.queryAll(1)).toEqual([{ title: "Cast Away", year: 2000 }]);
@@ -45,6 +44,7 @@ describe("Store lifecycle", () => {
     expect(() => store.loadRow({ title: "Captain Phillips", year: 2013 })).toThrowError(
       StoreStateError,
     );
+    expect(() => store.loadRows([{ title: "Sully", year: 2016 }])).toThrowError(StoreStateError);
   });
 
   it("creates an atomically prepared replacement store", () => {

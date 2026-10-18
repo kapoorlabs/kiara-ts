@@ -118,18 +118,20 @@ class Movie {
 
   @NumberField()
   rating = 0;
+
+  constructor(init?: Partial<Movie>) {
+    Object.assign(this, init);
+  }
 }
 
 const store = new Store(getEntitySchema(Movie), {
   normalizationProfile: NormalizationProfile.NATIVE,
 });
 
-store.loadRow(Object.assign(new Movie(), {
-  title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1,
-}));
-store.loadRow(Object.assign(new Movie(), {
-  title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6,
-}));
+store.loadRows([
+  new Movie({ title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1 }),
+  new Movie({ title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6 }),
+]);
 store.prepare();
 
 const results = store.search([
@@ -193,9 +195,11 @@ const movieSchema = defineSchema<Movie>([
 
 const store = new Store(movieSchema, { normalizationProfile: NormalizationProfile.NATIVE });
 
-store.loadRow({ title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1 });
-store.loadRow({ title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6 });
-store.loadRow({ title: "Big", year: 1988, actors: "Tom Hanks", rating: 7.3 });
+store.loadRows([
+  { title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1 },
+  { title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6 },
+  { title: "Big", year: 1988, actors: "Tom Hanks", rating: 7.3 },
+]);
 store.prepare();
 ```
 
