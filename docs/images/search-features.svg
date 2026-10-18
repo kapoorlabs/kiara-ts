@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="536" viewBox="0 0 960 536" role="img" aria-labelledby="title desc">
+  <title id="title">More than exact matches</title>
+  <desc id="desc">Six search capabilities: combined filters; one-edit-away typo correction; prefix predictions; keyword matching and English stemming; collections, dates, ranges and null-aware queries; selected fields and result limits.</desc>
+  <rect width="960" height="536" rx="20" fill="#0f172a"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="48" fill="#c4b5fd" font-size="14" font-weight="700" letter-spacing="2">ADVANCED SEARCH, BUILT IN</text>
+    <text x="32" y="89" fill="#f8fafc" font-size="32" font-weight="700">More than exact matches.</text>
+    <g fill="#1e293b" stroke="#475569">
+      <rect x="32" y="124" width="284" height="174" rx="14"/>
+      <rect x="338" y="124" width="284" height="174" rx="14"/>
+      <rect x="644" y="124" width="284" height="174" rx="14"/>
+      <rect x="32" y="320" width="284" height="184" rx="14"/>
+      <rect x="338" y="320" width="284" height="184" rx="14"/>
+      <rect x="644" y="320" width="284" height="184" rx="14"/>
+    </g>
+    <g fill="#5eead4" font-size="24" font-family="monospace" font-weight="700">
+      <text x="52" y="166">A + B + C</text>
+      <text x="358" y="166">serch &#x2192; search</text>
+      <text x="664" y="166">sea... &#x2192; search</text>
+      <text x="52" y="364">running &#x2192; run</text>
+      <text x="358" y="364">[from &#x2192; to]</text>
+      <text x="664" y="364">{ fieldA, fieldB }</text>
+    </g>
+    <g fill="#f8fafc" font-size="21" font-weight="700">
+      <text x="52" y="208">Combine filters</text>
+      <text x="358" y="208">One edit away</text>
+      <text x="664" y="208">Prefix predictions</text>
+      <text x="52" y="406">Keyword matching</text>
+      <text x="358" y="406">Rich data types</text>
+      <text x="664" y="406">Shape your results</text>
+    </g>
+    <g fill="#cbd5e1" font-size="17">
+      <text x="52" y="243">Equality, comparisons,</text>
+      <text x="52" y="268">membership and exclusions.</text>
+      <text x="358" y="243">Correct an inserted, deleted</text>
+      <text x="358" y="268">or substituted character.</text>
+      <text x="664" y="243">Suggest dictionary words</text>
+      <text x="664" y="268">as users type.</text>
+      <text x="52" y="441">Best/minimum match, English</text>
+      <text x="52" y="466">stemming and case matching.</text>
+      <text x="358" y="441">Collections, dates, ranges</text>
+      <text x="358" y="466">and null-aware queries.</text>
+      <text x="664" y="441">Selected fields, result limits</text>
+      <text x="664" y="466">and keyword input caps.</text>
+    </g>
+  </g>
+</svg>

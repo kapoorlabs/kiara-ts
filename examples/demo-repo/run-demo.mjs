@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import {
   createCondition,
   defineSchema,
@@ -220,31 +219,6 @@ const airportSuggestions = {
   typoFallback: suggestAirportTokens("interntional"),
 };
 
-let javaAccountingSnapshot = null;
-try {
-  const summaryJson = readFileSync(new URL("../../docs/java-test-accounting-summary.json", import.meta.url), "utf8");
-  const summary = JSON.parse(summaryJson);
-  const topUnmappedClasses = Array.isArray(summary.byClass)
-    ? [...summary.byClass]
-      .sort((left, right) => right.missing - left.missing)
-      .filter((entry) => entry.missing > 0)
-      .slice(0, 3)
-      .map((entry) => ({ className: entry.className, missing: entry.missing }))
-    : [];
-
-  javaAccountingSnapshot = {
-    sourceSha: summary.sourceSha,
-    totalDeclarations: summary.totalDeclarations,
-    covered: summary.statuses?.covered ?? 0,
-    nonportable: summary.statuses?.nonportable ?? 0,
-    missing: summary.statuses?.missing ?? 0,
-    mappedPercent: summary.coveragePercent ?? 0,
-    topUnmappedClasses,
-  };
-} catch (_error) {
-  javaAccountingSnapshot = null;
-}
-
 console.log("=== Kiara TypeScript Demo Repo: in action ===");
 console.log("");
 console.log("Structured search (year between 1990-2001, actor contains Tom Hanks):");
@@ -275,8 +249,3 @@ console.log(ignoreIndexErrorCode);
 console.log("");
 console.log("Airport suggestion tokens:");
 console.log(airportSuggestions);
-console.log("");
-console.log("Java declaration accounting snapshot:");
-console.log(
-  javaAccountingSnapshot ?? { status: "unavailable", message: "Run npm run accounting:java:sync to generate summary." },
-);

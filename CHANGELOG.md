@@ -5,17 +5,12 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0] - 2026-10-18
 
 ### Added
-- Full Java baseline parity accounting workflow:
-  - declaration ledger ([docs/java-test-accounting-ledger.json](./docs/java-test-accounting-ledger.json))
-  - generated summary ([docs/java-test-accounting-summary.json](./docs/java-test-accounting-summary.json))
-  - CI accounting validator ([scripts/java-test-accounting-check.mjs](./scripts/java-test-accounting-check.mjs))
-- Strict CI parity gate with accounting thresholds and benchmark checks.
-- Expanded imported Java fixture corpus and differential suites, including:
-  - collection contrast semantics
-  - null-inclusive collection behavior
-  - date/locale contract fixtures
-  - scale differential suites (10k/50k rows)
-- Demo output accounting snapshot in [examples/demo-repo/run-demo.mjs](./examples/demo-repo/run-demo.mjs).
+- Typed schemas and decorators for defining searchable records.
+- Structured filters, collection membership, and null-aware queries.
+- Numeric, date, and date-time range searches.
+- Keyword search, typo correction, stemming, and prefix predictions.
+- Selected-field projections, result limits, and worker adapters.
+- Runnable movie-search and airport-suggestion examples.
 
 ### Changed
 - Package metadata hardened for public npm publication:
@@ -24,11 +19,3 @@ All notable changes to this project will be documented in this file.
   - MIT license metadata
   - ESM entry points/exports and type declarations wired to `dist/`
   - explicit publish access and packed files list
-- Benchmark CI check is non-mutating; history recording is manual via
-  `npm run bench:record-history`.
-
-### Validation
-- `npm run test:parity:gate`
-- `npm test`
-- `npm run demo:repo`
-- `npm run accounting:java:check:ci`

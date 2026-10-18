@@ -1,4 +1,4 @@
-# Demo repo (runtime smoke)
+# Runnable examples
 
 Run:
 
@@ -6,7 +6,7 @@ Run:
 npm run demo:repo
 ```
 
-Decorator flow verification:
+Try the decorator examples:
 
 ```bash
 npm run demo:decorators
@@ -14,12 +14,12 @@ npm run demo:decorators
 
 This script demonstrates:
 
-- structured search over a movie store
+- structured search with combined field filters
 - keyword best-match with typo correction + stemming-aware fields
-- airport-style suggestion tokens using prefix prediction and one-edit fallback
+- autocomplete suggestions using prefix prediction and one-edit fallback
 
-Decorator verification demonstrates:
+The decorator examples demonstrate:
 
 - `@Entity` + field decorators producing compiled schemas
 - decorator metadata initialization requirement
-- compatibility behaviors such as secondary types and legacy aliases
+- collections, ranges, and alternative decorator names

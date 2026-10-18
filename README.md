@@ -1,7 +1,12 @@
 # Kiara TS (`@kapoorlabs/kiara-ts`)
 
-Browser-first TypeScript search/query engine with Java-Kiara-compatible behavior,
-strong parity validation, and zero runtime dependencies.
+Search your in-memory data by any combination of searchable fields, without
+manually creating indexes for each query. Kiara TS is a browser-first TypeScript
+library with zero runtime dependencies.
+
+**Search in a few milliseconds.** In a recorded Node.js benchmark over 10,000
+records, prepared searches averaged **1.92 ms**, with 95% completing in
+**2.35 ms or less**. See [performance](#performance) for the workload and limits.
 
 ## Install
 
@@ -9,30 +14,154 @@ strong parity validation, and zero runtime dependencies.
 npm install @kapoorlabs/kiara-ts
 ```
 
+## Choose your style
+
+Both patterns use the same search engine. **You only need one.**
+
+| Decorators: describe fields on a class | Schema builders: describe fields separately |
+|---|---|
+| `@Entity`, `@Text()`, `@NumberField()` | `defineSchema()`, `textField()`, `numberField()` |
+| Best if you prefer annotated TypeScript models | Best for plain objects or projects without decorators |
+| [Start with decorators](#decorator-quick-start) | [Start with schema builders](#schema-quick-start) |
+
 ## Table of contents
 
 - [Why Kiara TS](#why-kiara-ts)
-- [Quick start (5 minutes)](#quick-start-5-minutes)
+- [Performance](#performance)
+- [Decorator quick start](#decorator-quick-start)
+- [Schema quick start](#schema-quick-start)
   - [1) Create a schema and load data](#1-create-a-schema-and-load-data)
   - [2) Run structured queries](#2-run-structured-queries)
   - [3) Add keyword search with typo correction](#3-add-keyword-search-with-typo-correction)
   - [4) Use projections and limits](#4-use-projections-and-limits)
-- [Decorator quick start](#decorator-quick-start)
 - [Worker quick start](#worker-quick-start)
 - [Feature reference and detailed docs](#feature-reference-and-detailed-docs)
-- [Validation, quality gates, and CI checks](#validation-quality-gates-and-ci-checks)
 - [Release and package info](#release-and-package-info)
 
 ## Why Kiara TS
 
-- Typed schema API and decorator API (pick either style).
-- Rich operators (`EQUAL`, `BETWEEN`, `CONTAINS_*`, `NOT_*`, etc.).
-- Secondary types for collections, ranges, dates, and date-times.
-- Keyword search with stemming, typo correction (`one edit away`), predictions, and caps.
-- Worker adapters for isolated/background execution paths.
-- Strong parity + differential validation against Java baseline behavior.
+Your users choose the filters. You shouldn't have to design an index for every
+combination. **Define your fields, load your records, and call `prepare()`**:
+Kiara TS builds internal indexes so you can combine searchable fields freely.
 
-## Quick start (5 minutes)
+![Load records, call prepare to build indexes automatically, then search by any combination of searchable fields.](./docs/images/how-kiara-works.svg)
+
+Ideal for browser-side catalogs, filterable tables, and offline datasets.
+**Automatic indexing is not index-free storage:** records and indexes must fit
+in memory.
+
+![Advanced features: combined filters, one-edit-away typo correction, autocomplete predictions, keyword matching and stemming, dates and collections, and projections with limits.](./docs/images/search-features.svg)
+
+Also included: [typed schemas](#1-create-a-schema-and-load-data),
+[decorators](#decorator-quick-start), [worker integration](#worker-quick-start),
+configurable number handling, clear errors, and tools to inspect search indexes.
+Explore the [feature reference](#feature-reference-and-detailed-docs) or
+[choose a quick start](#choose-your-style).
+
+## Performance
+
+The [recorded benchmark](./benchmarks/last-bench-run.json) measured 200 searches
+over 10,000 records in Node.js. Each search combined two filters and returned
+up to 100 results.
+
+| Measurement | Recorded time |
+|---|---|
+| Average search | **1.92 ms** |
+| 95% of searches completed within | **2.35 ms** |
+| Index preparation, measured separately | 125.38 ms |
+
+These are measurements for one workload, not a latency guarantee. Query times
+exclude loading and preparation. Dataset size, filters, result count, hardware,
+and runtime affect performance; measure your own data, especially in a browser.
+
+## Decorator quick start
+
+Define a model, decorate its fields, then load and search. **No manual
+`defineSchema()` call is needed**: `getEntitySchema()` reads the class metadata.
+
+Use TypeScript 5+ standard decorators. Do not enable legacy
+`experimentalDecorators` or `emitDecoratorMetadata`. Include
+`"ESNext.Decorators"` in your TypeScript `lib` configuration alongside your
+runtime libraries.
+
+```ts
+import {
+  Entity,
+  Text,
+  NumberField,
+  CaseInsensitive,
+  CommaSeparatedStrings,
+  Store,
+  NormalizationProfile,
+  getEntitySchema,
+  initializeDecoratorMetadata,
+  createCondition,
+  Operator,
+} from "@kapoorlabs/kiara-ts";
+
+// Run before decorated classes are evaluated.
+initializeDecoratorMetadata();
+
+@Entity
+class Movie {
+  @Text()
+  @CaseInsensitive()
+  title = "";
+
+  @NumberField()
+  year = 0;
+
+  @Text()
+  @CaseInsensitive()
+  @CommaSeparatedStrings()
+  actors = "";
+
+  @NumberField()
+  rating = 0;
+}
+
+const store = new Store(getEntitySchema(Movie), {
+  normalizationProfile: NormalizationProfile.NATIVE,
+});
+
+store.loadRow(Object.assign(new Movie(), {
+  title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1,
+}));
+store.loadRow(Object.assign(new Movie(), {
+  title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6,
+}));
+store.prepare();
+
+const results = store.search([
+  createCondition<Movie, "actors">({
+    field: "actors",
+    operator: Operator.CONTAINS_EITHER,
+    values: ["tom hanks"],
+  }),
+  createCondition<Movie, "rating">({
+    field: "rating",
+    operator: Operator.GREATER_THAN,
+    values: [8],
+  }),
+]);
+
+console.log(results.map((movie) => movie.title));
+// ["Cast Away"]
+```
+
+Native numeric mode preserves decimal values. The default Java numeric mode
+truncates fractional search keys.
+
+Once prepared, this store supports the same
+[keyword search](#3-add-keyword-search-with-typo-correction),
+[projections](#4-use-projections-and-limits), and
+[worker integration](#worker-quick-start) as a schema-built store.
+See [schema and decorator setup](./docs/usage.md#schemas-and-decorators) for more.
+
+## Schema quick start
+
+**Schema-builder alternative:** use this pattern instead of the decorated class
+above. No decorator configuration or metadata initialization is needed.
 
 ### 1) Create a schema and load data
 
@@ -62,7 +191,7 @@ const movieSchema = defineSchema<Movie>([
   numberField("rating"),
 ]);
 
-const store = new Store(movieSchema, { normalizationProfile: NormalizationProfile.JAVA });
+const store = new Store(movieSchema, { normalizationProfile: NormalizationProfile.NATIVE });
 
 store.loadRow({ title: "Cast Away", year: 2000, actors: "Tom Hanks, Helen Hunt", rating: 8.1 });
 store.loadRow({ title: "Apollo 13", year: 1995, actors: "Tom Hanks, Bill Paxton", rating: 7.6 });
@@ -99,7 +228,7 @@ console.log(results.map((row) => row.title));
 import { KeywordSearch } from "@kapoorlabs/kiara-ts";
 
 const keywordSearch = new KeywordSearch(store);
-const keywordResult = keywordSearch.bestMatch("apolo mission", { limit: 5 });
+const keywordResult = keywordSearch.bestMatch("apolo", { limit: 5 });
 
 console.log(keywordResult.correctedKeywords);
 // { apolo: "apollo" }
@@ -107,144 +236,66 @@ console.log(keywordResult.correctedKeywords);
 
 ### 4) Use projections and limits
 
+Return only the fields you need (a *projection*) and cap the number of results.
+
 ```ts
 const typedProjection = store.searchProjection(
-  [createCondition<Movie, "actors">({ field: "actors", values: ["tom hanks"] })],
+  [createCondition<Movie, "actors">({ field: "actors", operator: Operator.CONTAINS_EITHER, values: ["tom hanks"] })],
   ["title", "rating"],
   2,
 );
 
 const legacyProjection = store.searchLegacyProjection(
-  [createCondition<Movie, "actors">({ field: "actors", values: ["tom hanks"] })],
+  [createCondition<Movie, "actors">({ field: "actors", operator: Operator.CONTAINS_EITHER, values: ["tom hanks"] })],
   ["title", "year"],
   2,
 );
 ```
 
-See runnable end-to-end output in [examples/demo-repo/run-demo.mjs](./examples/demo-repo/run-demo.mjs).
-
-## Decorator quick start
-
-If you prefer Java-style decorators instead of schema builders:
-
-```ts
-import { Entity, Text, NumberField, CaseInsensitive, Store, getEntitySchema } from "@kapoorlabs/kiara-ts";
-
-@Entity
-class MovieEntity {
-  @Text()
-  @CaseInsensitive()
-  title = "";
-
-  @NumberField()
-  year = 0;
-}
-
-const schema = getEntitySchema(MovieEntity);
-const store = new Store(schema);
-```
-
-Decorator behavior and compatibility coverage:
-[src/decorators/entity.test.ts](./src/decorators/entity.test.ts)
-
 ## Worker quick start
 
-Use the in-memory worker adapter when you want request/response execution
-through the worker protocol shape:
+Use the in-memory adapter to submit a search request and receive a result or
+error response. This example continues with a store from either quick start:
 
 ```ts
-import { InMemoryWorkerAdapter } from "@kapoorlabs/kiara-ts";
+import { InMemoryWorkerAdapter, WorkerOperation } from "@kapoorlabs/kiara-ts";
 
-const worker = new InMemoryWorkerAdapter(store);
-// Use worker.execute(...) with WorkerRequest payloads from the protocol exports.
+const worker = new InMemoryWorkerAdapter<Movie>();
+worker.registerStore("movies", store);
+const response = await worker.execute({
+  requestId: "search-1",
+  storeId: "movies",
+  operation: WorkerOperation.SEARCH,
+  payload: {
+    conditions: [createCondition<Movie, "year">({ field: "year", values: [2000] })],
+  },
+});
+if (!response.ok) throw new Error(response.message);
+console.log(response.result);
 ```
 
-Worker protocol and adapters:
-- [src/worker/protocol.ts](./src/worker/protocol.ts)
-- [src/worker/in-memory-worker-adapter.ts](./src/worker/in-memory-worker-adapter.ts)
-- [src/worker/browser-worker-adapter.ts](./src/worker/browser-worker-adapter.ts)
+This adapter runs on the current thread; it does not create a Web Worker.
+See [worker integration](./docs/usage.md#workers) for background execution.
 
 ## Feature reference and detailed docs
 
-Use this section as your map from feature area to detailed documentation.
-
-### Core feature matrix (complete capability list)
-
-- Full feature inventory (operators, annotations, capabilities):
-  [docs/feature-parity.md](./docs/feature-parity.md)
-- Row-level implementation/evidence status:
-  [docs/parity-ledger.md](./docs/parity-ledger.md)
-- Compatibility gate closure criteria:
-  [docs/blocker-gates.md](./docs/blocker-gates.md)
-
-### Query and data semantics
-
-- Operator compatibility and behavior:
-  [src/query/operator-parity-matrix.test.ts](./src/query/operator-parity-matrix.test.ts)
-- Date, date-time, range semantics:
-  [src/store/date-range.test.ts](./src/store/date-range.test.ts),
-  [src/store/numeric-range.test.ts](./src/store/numeric-range.test.ts),
-  [src/testing/date-locale-contract.test.ts](./src/testing/date-locale-contract.test.ts)
-- Null and collection semantics:
-  [src/store/search.test.ts](./src/store/search.test.ts),
-  [src/testing/fixtures/java-corpus-number-collection-null.json](./src/testing/fixtures/java-corpus-number-collection-null.json)
-
-### Keyword and text features
-
-- Keyword matching/minimum matching:
-  [src/query/keyword-search.test.ts](./src/query/keyword-search.test.ts)
-- Dictionary, prediction, one-edit correction:
-  [src/text/dictionary-trie.test.ts](./src/text/dictionary-trie.test.ts)
-- Stemming:
-  [src/text/stemming.test.ts](./src/text/stemming.test.ts)
-- Stress/capacity behavior:
-  [src/testing/keyword-capacity-stress.test.ts](./src/testing/keyword-capacity-stress.test.ts)
-
-### Differential/oracle validation
-
-- Imported Java-oracle corpus runner:
-  [src/testing/oracle-java-corpus-smoke.test.ts](./src/testing/oracle-java-corpus-smoke.test.ts)
-- Imported keyword oracle runner:
-  [src/testing/oracle-java-keyword-smoke.test.ts](./src/testing/oracle-java-keyword-smoke.test.ts)
-- Scale differential suites:
-  [src/testing/oracle-scale-differential.test.ts](./src/testing/oracle-scale-differential.test.ts)
-
-### Error handling and API compatibility
-
-- Error taxonomy mapping:
-  [docs/exception-parity-map.md](./docs/exception-parity-map.md)
-- Public API exports:
-  [src/index.ts](./src/index.ts)
-
-### Governance and planning docs
-
-- Migration architecture and release strategy:
-  [docs/migration-plan.md](./docs/migration-plan.md)
-- Demo architecture and behavior:
-  [docs/demo-plan.md](./docs/demo-plan.md)
-- Data provenance policy:
-  [docs/data-provenance.md](./docs/data-provenance.md)
-- Java declaration-level accounting:
-  [docs/java-test-accounting.md](./docs/java-test-accounting.md)
-
-## Validation, quality gates, and CI checks
-
-Run these locally before publishing/releasing:
-
-```bash
-npm run test:parity:gate
-npm test
-npm run demo:repo
-```
-
-CI/protection details:
-[docs/ci-required-checks.md](./docs/ci-required-checks.md)
+| What you want to do | Guide |
+|---|---|
+| Define fields, choose numeric behavior, or use decorators | [Schemas and decorators](./docs/usage.md#schemas-and-decorators) |
+| Load, prepare, and replace a dataset | [Store lifecycle](./docs/usage.md#store-lifecycle) |
+| Combine filters, query collections, dates, ranges, and nulls | [Structured queries](./docs/usage.md#structured-queries) |
+| Select fields and limit results | [Projections and limits](./docs/usage.md#projections-and-limits) |
+| Search keywords with stemming and typo correction | [Keyword search](./docs/usage.md#keyword-search) |
+| Build autocomplete suggestions | [Dictionary and autocomplete](./docs/usage.md#dictionary-and-autocomplete) |
+| Execute requests in a browser worker | [Workers](./docs/usage.md#workers) |
+| Handle failures and inspect a prepared store | [Errors and diagnostics](./docs/usage.md#errors-and-diagnostics) |
 
 ## Release and package info
 
 - Package: `@kapoorlabs/kiara-ts`
 - Module type: ESM (`type: module`)
 - Entry points: `dist/index.js` + `dist/index.d.ts`
+- Includes JavaScript and TypeScript declarations; source maps and original TypeScript sources are not included.
 - License: MIT ([LICENSE](./LICENSE))
 
 Release notes:

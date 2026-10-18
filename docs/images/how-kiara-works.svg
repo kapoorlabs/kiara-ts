@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">Load once. Search many ways.</title>
+  <desc id="desc">Define fields and load records, then call prepare to build internal indexes automatically. Search by one field or combine multiple searchable fields without manually creating indexes for each combination.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0L8 4L0 8" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="420" rx="20" fill="#0f172a"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="48" fill="#5eead4" font-size="14" font-weight="700" letter-spacing="2">SEARCH WITHOUT INDEX DESIGN</text>
+    <text x="32" y="89" fill="#f8fafc" font-size="32" font-weight="700">Load once. Search many ways.</text>
+    <rect x="32" y="128" width="242" height="200" rx="14" fill="#1e293b" stroke="#475569"/>
+    <text x="52" y="162" fill="#cbd5e1" font-size="14" font-weight="700">01 / YOUR DATA</text>
+    <text x="52" y="199" fill="#f8fafc" font-size="20" font-weight="700">Define + load</text>
+    <g fill="#cbd5e1" font-size="17">
+      <text x="52" y="235">Your fields. Your records.</text>
+      <text x="52" y="266">No fixed data model.</text>
+    </g>
+    <path d="M283 228H316" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="328" y="128" width="248" height="200" rx="14" fill="#134e4a" stroke="#2dd4bf"/>
+    <text x="348" y="162" fill="#99f6e4" font-size="14" font-weight="700">02 / KIARA TS</text>
+    <text x="348" y="203" fill="#ffffff" font-size="27" font-family="monospace" font-weight="700">prepare()</text>
+    <text x="348" y="242" fill="#ccfbf1" font-size="18">Internal indexes built</text>
+    <text x="348" y="269" fill="#ccfbf1" font-size="18">automatically, in memory.</text>
+    <path d="M585 228H618" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="630" y="128" width="298" height="200" rx="14" fill="#1e293b" stroke="#475569"/>
+    <text x="650" y="162" fill="#cbd5e1" font-size="14" font-weight="700">03 / COMBINE SEARCH KEYS</text>
+    <g fill="#f8fafc" font-size="18">
+      <text x="650" y="202">Field A</text>
+      <text x="650" y="242">Field A + Field B</text>
+      <text x="650" y="282">Field A + Field B + Field C</text>
+    </g>
+    <text x="32" y="374" fill="#cbd5e1" font-size="18">No separate search server. No manual index for every field combination.</text>
+  </g>
+</svg>

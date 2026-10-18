@@ -23,6 +23,8 @@
   },
   "files": [
     "dist",
+    "docs/images",
+    "docs/usage.md",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
@@ -38,7 +40,7 @@
     "in-memory"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run src",
     "test:watch": "vitest src",
