@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-10-23
+
+### Added
+- Opt-in `QueryInterpreter` with schema-aware field/value aliases, cross-field
+  whole-value discovery, explicit comparisons, inclusive numeric ranges,
+  canonical-unit conversion, ambiguity confirmation, and strict execution.
+- Serializable interpretation results and source-span-based chip editing through
+  `editQueryFragment`; no UI framework or runtime dependency required.
+- A CI-enforced 100% statement, branch, function, and line coverage gate for the
+  interpreter module.
+
 ## [1.0.0] - 2026-10-18
 
 ### Added

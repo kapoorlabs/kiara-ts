@@ -1,6 +1,6 @@
 {
   "name": "@kapoorlabs/kiara-ts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "Browser-first TypeScript port of Kiara DB",
   "type": "module",
@@ -44,6 +44,7 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run src",
     "test:watch": "vitest src",
+    "test:interpreter:coverage": "vitest run --config vitest.interpreter.config.ts --coverage",
     "test:oracle:full": "vitest run src/testing/oracle-java-corpus-smoke.test.ts src/testing/oracle-java-keyword-smoke.test.ts src/testing/java-expectation-fixtures.test.ts",
     "test:oracle:scale": "vitest run src/testing/oracle-scale-differential.test.ts",
     "test:parity:gate": "npm run build && npm run typecheck && npm run test:oracle:full && npm run test:oracle:scale && vitest run src/query/operator-parity-matrix.test.ts && npm run accounting:java:check:ci && npm run bench:check:ci",
@@ -61,6 +62,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0-beta-1791301756000",
+    "@vitest/coverage-v8": "3.2.4",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
   }

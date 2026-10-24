@@ -27,3 +27,6 @@ jobs:
 
       - name: Build and run parity gate
         run: npm run test:parity:gate
+
+      - name: Enforce complete query-interpreter coverage
+        run: npm run test:interpreter:coverage

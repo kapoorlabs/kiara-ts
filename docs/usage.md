@@ -51,6 +51,188 @@ store so you can load and prepare again.
 Treat loaded records and inspection results as read-only. Data and indexes live
 in memory; this is not a persistent database.
 
+## Schema-aware query interpreter
+
+`QueryInterpreter<T>` is an optional, deterministic interpretation layer over a
+prepared store. It uses the existing schema and a cached whole-value dictionary,
+plus explicitly configured aliases and units. It does not change `Store.search`
+or keyword-search semantics, and works with schemas built through either schema
+builders or decorators.
+
+### Complete example
+
+```typescript
+import {
+  QueryInterpreter, editQueryFragment, defineSchema, textField, numberField,
+  Store, NormalizationProfile,
+} from "@kapoorlabs/kiara-ts";
+
+interface Component {
+  type: string;
+  capacitance: number;
+  voltage: number;
+  testVoltage: number;
+  package: string;
+}
+
+const schema = defineSchema<Component>([
+  textField("type", { caseInsensitive: true }),
+  numberField("capacitance"),
+  numberField("voltage"),
+  numberField("testVoltage"),
+  textField("package"),
+]);
+const store = new Store(schema, {
+  normalizationProfile: NormalizationProfile.NATIVE,
+});
+// Illustrative records: capacitance is stored in farads, voltages in volts.
+store.loadRows([
+  { type: "Ceramic", capacitance: 0.00001, voltage: 25, testVoltage: 50, package: "0603" },
+  { type: "Film", capacitance: 0.00002, voltage: 50, testVoltage: 100, package: "0805" },
+]);
+store.prepare();
+
+const interpreter = new QueryInterpreter(store, {
+  fields: {
+    capacitance: {
+      aliases: ["cap"],
+      canonicalUnit: "F",
+      units: { F: 1, uF: 1e-6, nF: 1e-9 },
+    },
+    voltage: {
+      aliases: ["rated voltage"],
+      canonicalUnit: "V",
+      units: { V: 1, mV: 0.001 },
+    },
+    testVoltage: {
+      canonicalUnit: "V",
+      units: { V: 1 },
+    },
+    type: { valueAliases: { mlcc: "Ceramic" } },
+  },
+});
+
+const input = "ceramic cap:10000nF voltage>=25V 0603";
+const interpretation = interpreter.interpret(input);
+console.log(interpretation.issues); // []
+console.log(interpreter.search(input)); // First component
+
+const ambiguous = interpreter.interpret("25V");
+console.log(ambiguous.issues[0]?.kind); // "ambiguous"
+// Both voltage and testVoltage are plausible fields, regardless of current hits.
+console.log(interpreter.search("25V", { "0:3": "voltage" })); // First component
+
+console.log(editQueryFragment(ambiguous, "0:3", "voltage>=25V"));
+// voltage>=25V
+console.log(editQueryFragment(ambiguous, "0:3", ""));
+// Empty input: all filters removed
+```
+
+### Syntax and matching
+
+| Input | Meaning |
+|---|---|
+| `ceramic` | Discover the complete value across searchable fields |
+| `mlcc` | Discover a configured value alias |
+| `cap:10uF` or `cap=10000nF` | Equality after conversion to the field's canonical unit |
+| `voltage>=25V` | An explicit lower bound |
+| `stock<1000` | An explicit upper bound |
+| `type!=Ceramic` | Inequality |
+| `cap:10uF..20uF` | Inclusive range; each bound is independently converted |
+| `manufacturer:"Texas Instruments"` | A quoted value containing spaces |
+| `"rated voltage">=25V` | A quoted multiword field alias |
+| `available:true` | Exact boolean literal; also supports `false` |
+
+Separate expressions with whitespace. Keep the field, operator, and quantity
+contiguous: write `voltage>=25V`, not `voltage >= 25 V`. Double-quoted strings use
+JSON escaping. Unrestricted prose, implicit OR, grouping, date expressions, and
+unit inheritance between range bounds are not part of this grammar.
+For example, `cap:10..20uF` means 10 farads through 20 microfarads, not 10 through
+20 microfarads, and is rejected as reversed.
+
+Bare values mean equality, never an assumed minimum specification. A quantity
+with units can suggest fields even if it currently has no matching rows.
+Unqualified comparisons and ranges can likewise have several candidate fields.
+Bare unitless numbers are discovered from observed values rather than assigned
+to every numeric field. Leading-zero text such as `0603` is preserved.
+
+Discovery matches whole values, not individual words from multiword scalar
+values. Field case-sensitivity follows its schema. For
+`commaSeparatedStrings`, discovery uses individual trimmed members;
+equality/inequality compile to `CONTAINS_EITHER`/`NOT_CONTAINS`. Repeated
+expressions are ANDed, allowing several required collection members.
+
+### Units and metadata
+
+- Metadata is keyed by typed schema field names. Field aliases are
+  case-insensitive; value aliases follow their field's case-sensitivity.
+- Alias collisions are preserved as ambiguity, not resolved by field order.
+- Value aliases are supported on text/enum fields.
+- Units are opt-in on scalar number fields and require `NATIVE` normalization.
+  The canonical unit must be present with factor 1; every other factor is a
+  finite positive multiplier into that unit.
+- Stored records must already use the canonical unit. The interpreter does not
+  convert your source records or discover measurement dimensions from column
+  names.
+- Unit symbols are case-sensitive. Both micro symbols normalize to `u`;
+  otherwise aliases must be declared explicitly. No universal unit registry is
+  bundled.
+- Decimal quantity/factor multiplication is performed before a single conversion
+  to JavaScript `number`, avoiding intermediate multiplication noise for exact
+  equality such as `10uF` versus `10000nF`. Final precision is still IEEE-754,
+  not arbitrary-precision decimal arithmetic.
+- Overflow, underflow to zero, and magnitudes above `Number.MAX_SAFE_INTEGER`
+  are rejected. Fractional input is rejected in the default JAVA profile to
+  prevent silent integer truncation.
+
+### Results, confirmation, and UI integration
+
+`interpret(input, selections?)` returns:
+
+- `input`: the original input.
+- `filters`: resolved `{ id, text, start, end, condition }` fragments.
+- `issues`: unresolved fragments with `kind`, `message`, and candidate conditions.
+  Kinds are `ambiguous`, `unrecognized`, and `invalid`.
+
+Source offsets are JavaScript UTF-16 offsets with an exclusive `end`. IDs use
+`start:end`. Render the conditions as chips and candidates as confirmation
+choices. Pass the chosen field in a `Record<fragmentId, fieldName>` on the next
+interpretation or search. Invalid confirmations remain explicit issues.
+
+Use `editQueryFragment(interpretation, id, replacement)` to edit or remove a chip
+in the original input. Reinterpret the returned string and reset confirmations
+after input changes; offsets and IDs belong to that interpretation, not to future
+edits. Results are JSON-serializable and can be stored as application state.
+Rendering, keyboard interaction, and confirmation dialogs remain the UI's
+responsibility; there is no DOM dependency.
+
+`search(input, selections?, limit?)` refuses to run if any issue remains and
+throws `QueryValidationError` with the interpretation in `error.details`.
+It never silently applies a subset of requested filters. A valid empty query
+intentionally calls `queryAll(limit)`; a valid query with no hits returns `[]`.
+
+The initial interpreter supports scalar text, enum, number, boolean, and
+comma-separated string fields. Ignored indexes, long fields, dates, numeric
+collections, and stored range types are excluded and cannot be configured as
+interpreter fields; their existing structured-query APIs remain available.
+Input is bounded to 4,096 characters.
+
+The value dictionary is built once from the prepared store. After replacing or
+reloading data, construct a new interpreter. Attempts to reuse one after its
+store snapshot changes fail explicitly. Treat records as read-only, as with
+ordinary prepared-store queries.
+
+### Coverage gate
+
+```bash
+npm run test:interpreter:coverage
+```
+
+This enforces 100% statements, branches, functions, and lines for
+`src/query/query-interpreter.ts`, including the chip-editing helper. It does not
+claim that the entire pre-existing library has 100% coverage. The same command
+runs in CI.
+
 ## Structured queries
 
 Build conditions with `createCondition({ field, operator, values })`.

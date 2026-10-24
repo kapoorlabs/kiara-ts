@@ -95,6 +95,15 @@ export {
 export { validateOperatorCompatibility } from "./query/operator-compatibility.js";
 export { Operator, type Operator as OperatorType } from "./query/operator.js";
 export { StoreSearch } from "./query/store-search.js";
+export { QueryInterpreter, editQueryFragment } from "./query/query-interpreter.js";
+export type {
+  InterpretationFieldOptions,
+  QueryInterpreterOptions,
+  QueryFragment,
+  InterpretedFilter,
+  InterpretationIssue,
+  QueryInterpretation,
+} from "./query/query-interpreter.js";
 export { StoreLoader, buildPreparedStore } from "./store/store-loader.js";
 export { Store } from "./store/store.js";
 export { StoreState, type StoreState as StoreStateType } from "./store/store-state.js";

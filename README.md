@@ -35,6 +35,7 @@ Both patterns use the same search engine. **You only need one.**
   - [3) Add keyword search with typo correction](#3-add-keyword-search-with-typo-correction)
   - [4) Use projections and limits](#4-use-projections-and-limits)
 - [Worker quick start](#worker-quick-start)
+- [Schema-aware query interpretation](#schema-aware-query-interpretation)
 - [Feature reference and detailed docs](#feature-reference-and-detailed-docs)
 - [Release and package info](#release-and-package-info)
 
@@ -255,6 +256,25 @@ const legacyProjection = store.searchLegacyProjection(
   2,
 );
 ```
+
+## Schema-aware query interpretation
+
+`QueryInterpreter` is an opt-in layer over a prepared store. It turns input such
+as `ceramic cap:10uF voltage>=25V package:0603` into typed, AND-combined conditions.
+Configure field/value aliases and canonical-unit conversion separately from your
+schema, so existing schemas, decorators, and search calls retain their behavior.
+
+It discovers whole values across searchable fields and reports ambiguous values
+instead of guessing a field. `interpret()` returns serializable filters,
+diagnostics, candidate conditions, and source spans for chips. `search()` rejects
+unresolved fragments; `editQueryFragment()` supports chip editing and removal.
+The library does not render controls or infer unrestricted natural language.
+
+See the [complete query-interpreter guide](./docs/usage.md#schema-aware-query-interpreter)
+for configuration, confirmation, supported syntax, and limitations.
+
+Run `npm run test:interpreter:coverage` to enforce **100% statements, branches,
+functions, and lines** on the interpreter module. CI runs the same gate.
 
 ## Worker quick start
 
