@@ -17,8 +17,8 @@ Common field options:
 |---|---|
 | `caseInsensitive` | Lower-case text for structured and keyword matching; without it, keyword search is case-sensitive |
 | `ignoreIndex` | Exclude a field from search; attempts to query it throw |
-| `stemmedIndex` | Enable English (Snowball) stemming in keyword search |
-| `oneEditAway`, `predictable` | Enable keyword spelling correction for the field (decorators: `@OneEditAway()`, `@Predictable()`) |
+| `stemmedIndex` | Let word forms match in keyword search (`decorating` finds "Decoration"); see [typo correction and stemming](#typo-correction-and-stemming) |
+| `oneEditAway`, `predictable` | Fix one-letter typos in keyword search (`chargr` finds "Charger") (decorators: `@OneEditAway()`, `@Predictable()`) |
 | `secondaryType` | Interpret serialized collections, dates, or ranges |
 | `format` | Set a supported date/date-time format |
 
@@ -314,34 +314,79 @@ Results include `results`, `matchedKeywords`, `correctedKeywords`,
   more". It suits rule or configuration rows where blank fields are wildcards;
   on wide records it usually returns nothing.
 - **Case:** keywords match exactly unless the field is `caseInsensitive`.
-- **Stemming:** `stemmedIndex` fields use Snowball English stemming, including
-  its exceptions (`skies → sky`, `news` unchanged).
-- **Spelling correction** runs only on `oneEditAway` or `predictable` fields,
-  and only for words longer than three characters. Like Java, it follows a
-  single greedy path through the field's dictionary: a typo near the start of a
-  word (`latern`) may not be corrected, and a correction can be an incomplete
-  word. Inspect `correctedKeywords` before showing a correction to users.
-- **Stemming and correction on one field interfere.** A `stemmedIndex` field
-  feeds stems (`concert`, `bottl`) to the correction dictionary, so a typo of
-  the full word (`concrts`) is often two edits away and goes uncorrected. To get
-  both, index the text twice and search both fields:
-
-  ```ts
-  const schema = defineSchema<Product>([
-    textField("title", { caseInsensitive: true, oneEditAway: true }),
-    textField("titleStem", { caseInsensitive: true, stemmedIndex: true }),
-  ]);
-  store.loadRows(products.map((p) => ({ ...p, titleStem: p.title })));
-  keywordSearch.bestMatch(input, { fields: ["title", "titleStem"] });
-  ```
-
-  On 3,788 retail titles, this corrected 81% of mid-word one-edit typos instead
-  of 35% for a single stemmed field, while keeping stemming's matches. It costs
-  a second text index. Structured value discovery (`QueryInterpreter`) then sees
-  two fields with identical values, so resolve that ambiguity to the original
-  field.
+- **Typos and word forms:** see [Typo correction and stemming](#typo-correction-and-stemming).
 - **Tokenization** replaces Java's punctuation set with spaces and removes
   brackets without splitting words (`a(b)c` becomes `abc`).
+
+### Typo correction and stemming
+
+Two optional field settings help when people don't type exactly what is in
+your data. **You can use one, the other, or both.**
+
+**Typo correction (`oneEditAway`)** fixes one wrong, missing, or extra letter
+in a word. For example, `chargr` finds "Wireless Charger", and `lanterms` finds
+"Paper Lanterns". Turn it on for the field people type into:
+
+```ts
+const store = new Store(defineSchema<Product>([
+  textField("title", { caseInsensitive: true, oneEditAway: true }),
+]));
+store.loadRows(products);
+store.prepare();
+
+const result = new KeywordSearch(store).bestMatch("chargr", { fields: ["title"] });
+console.log(result.correctedKeywords); // { chargr: "charger" }
+```
+
+Good to know:
+
+- It fixes one letter per word, in words longer than three letters.
+- Two swapped letters (`bottel`) count as two fixes, so they are not corrected.
+- It reads the word from left to right, so a typo near the start (`latern`)
+  is often missed.
+- `correctedKeywords` tells you what was changed, so you can show users
+  "Showing results for charger".
+- `predictable: true` turns it on as well.
+
+**Stemming (`stemmedIndex`)** lets different forms of the same word find each
+other. Kiara cuts each word down to its root, called a *stem*, before comparing:
+
+| These words | share this stem |
+|---|---|
+| lantern, lanterns | lantern |
+| run, runs, running | run |
+| decorate, decorating, decoration | decor |
+| study, studies, studying | studi |
+| connect, connected, connection | connect |
+
+So a search for `decorating` finds "Christmas Decoration", and `running` finds
+"Run Club Shoes". A stem is not always a real word (`decor`, `studi`), and
+irregular forms such as `ran` or `mice` are left alone. Stemming is for English.
+
+```ts
+textField("title", { caseInsensitive: true, stemmedIndex: true })
+```
+
+**Want both on the same text? Use a second field.** Don't put both settings on
+one field. A stemmed field corrects typos against stems such as `studi` or
+`bottl` instead of real words, so many typos go unfixed. Store the text twice
+instead, one field for each feature, and search both:
+
+```ts
+const store = new Store(defineSchema<Product>([
+  textField("title", { caseInsensitive: true, oneEditAway: true }),
+  textField("titleStem", { caseInsensitive: true, stemmedIndex: true }),
+]));
+store.loadRows(products.map((p) => ({ ...p, titleStem: p.title })));
+store.prepare();
+
+new KeywordSearch(store).bestMatch(input, { fields: ["title", "titleStem"] });
+```
+
+On 3,788 real product titles, the two-field setup fixed 81% of test typos,
+against 35% with both settings on one field, and kept every stemming match. The
+second field uses extra memory. If you also use `QueryInterpreter`, it sees two
+fields with the same values; choose the original field when it asks.
 
 ## Dictionary and autocomplete
 
