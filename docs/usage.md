@@ -321,6 +321,25 @@ Results include `results`, `matchedKeywords`, `correctedKeywords`,
   single greedy path through the field's dictionary: a typo near the start of a
   word (`latern`) may not be corrected, and a correction can be an incomplete
   word. Inspect `correctedKeywords` before showing a correction to users.
+- **Stemming and correction on one field interfere.** A `stemmedIndex` field
+  feeds stems (`concert`, `bottl`) to the correction dictionary, so a typo of
+  the full word (`concrts`) is often two edits away and goes uncorrected. To get
+  both, index the text twice and search both fields:
+
+  ```ts
+  const schema = defineSchema<Product>([
+    textField("title", { caseInsensitive: true, oneEditAway: true }),
+    textField("titleStem", { caseInsensitive: true, stemmedIndex: true }),
+  ]);
+  store.loadRows(products.map((p) => ({ ...p, titleStem: p.title })));
+  keywordSearch.bestMatch(input, { fields: ["title", "titleStem"] });
+  ```
+
+  On 3,788 retail titles, this corrected 81% of mid-word one-edit typos instead
+  of 35% for a single stemmed field, while keeping stemming's matches. It costs
+  a second text index. Structured value discovery (`QueryInterpreter`) then sees
+  two fields with identical values, so resolve that ambiguity to the original
+  field.
 - **Tokenization** replaces Java's punctuation set with spaces and removes
   brackets without splitting words (`a(b)c` becomes `abc`).
 
