@@ -10,6 +10,8 @@ library with zero runtime dependencies.
 
 **[Try the live demo](https://kapoor-labs.github.io/kiara-demo/)**: 10,000 products searched in your browser, typos included.
 
+**[Write your own queries in the playground](https://kapoor-labs.github.io/kiara-ts-examples/)**: query 5,043 movies or 7,698 airports in an editor with field-aware autocomplete, follow 43 guided examples, or import your own CSV. Nothing to install, and your data stays in the browser.
+
 [![Typing "wireles keybord" gets corrected to wireless keyboard, then brand, color and tag filters are combined](./docs/images/demo.gif)](https://kapoor-labs.github.io/kiara-demo/)
 
 Also available for Java: [kiara](https://github.com/kapoorlabs/kiara). Based on the paper
